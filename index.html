@@ -65,8 +65,12 @@
         <span style="font-weight:600;font-size:15px" class="hide-mobile">Ren Echo 工具箱</span>
       </a>
       <div style="display:flex;align-items:center;gap:8px">
-        <button v-if="page!=='home'" @click="page='home'" class="btn btn-outline" style="font-size:13px">← 首页</button>
+        <button v-if="page!=='home'" @click="page='home'" class="btn btn-outline" style="font-size:13px">← {{ lang==='zh'?'首页':'Home' }}</button>
         <button @click="toggleTheme" class="btn btn-outline" style="width:36px;height:36px;padding:0;display:flex;align-items:center;justify-content:center;font-size:16px">{{ isDark ? '☀️' : '🌙' }}</button>
+        <a href="https://github.com/watermelontip/tools-portal-cdn" target="_blank" class="btn btn-outline" style="width:36px;height:36px;padding:0;display:flex;align-items:center;justify-content:center" title="GitHub">
+          <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        </a>
+        <button @click="toggleLang" class="btn btn-outline" style="width:36px;height:36px;padding:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600">{{ lang==='zh'?'EN':'中' }}</button>
       </div>
     </div>
   </nav>
@@ -75,19 +79,19 @@
   <div v-if="page==='home'" style="max-width:1100px;margin:0 auto;padding:48px 16px">
     <div style="text-align:center;margin-bottom:48px" class="animate">
       <h1 style="font-size:clamp(2rem,5vw,3rem);font-weight:700;margin-bottom:12px">
-        <span style="background:linear-gradient(135deg,#0ea5e9,#8b5cf6,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent">在线工具箱</span>
+        <span style="background:linear-gradient(135deg,#0ea5e9,#8b5cf6,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent">{{ t('title') }}</span>
       </h1>
-      <p style="color:var(--text2);font-size:18px;margin-bottom:32px">免费 · 无需注册 · 数据不离开浏览器</p>
+      <p style="color:var(--text2);font-size:18px;margin-bottom:32px">{{ t('subtitle') }}</p>
       <div style="max-width:400px;margin:0 auto;position:relative">
-        <input v-model="search" type="text" placeholder="搜索工具..." style="width:100%;padding:12px 16px 12px 40px;border-radius:12px;font-size:15px" />
+        <input v-model="search" type="text" :placeholder="t('search')" style="width:100%;padding:12px 16px 12px 40px;border-radius:12px;font-size:15px" />
         <svg style="position:absolute;left:12px;top:14px;color:var(--text2)" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       </div>
     </div>
 
     <!-- Category Tabs -->
     <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:32px">
-      <button v-for="c in categories" :key="c" @click="activeCat=c"
-        :style="{background:activeCat===c?'var(--primary)':'transparent',color:activeCat===c?'#fff':'var(--text2)',border:activeCat===c?'none':'1px solid var(--border)'}"
+      <button v-for="(c, ci) in categories" :key="ci" @click="activeCat=ci"
+        :style="{background:activeCat===ci?'var(--primary)':'transparent',color:activeCat===ci?'#fff':'var(--text2)',border:activeCat===ci?'none':'1px solid var(--border)'}"
         class="btn" style="border-radius:999px;font-size:13px;padding:6px 16px">{{ c }}</button>
     </div>
 
@@ -107,14 +111,14 @@
 
     <div v-if="filteredTools.length===0" style="text-align:center;padding:80px 0;color:var(--text2)">
       <div style="font-size:48px;margin-bottom:16px">🔍</div>
-      <p>没有找到匹配的工具</p>
+      <p>{{ t('noResult') }}</p>
     </div>
 
     <div style="text-align:center;margin-top:64px;color:var(--text2);font-size:14px">
       <div style="display:inline-flex;gap:48px">
-        <div><span style="font-size:24px;font-weight:700;color:var(--text)">{{ tools.length }}</span><br>个工具</div>
-        <div><span style="font-size:24px;font-weight:700;color:var(--text)">0</span><br>数据上传</div>
-        <div><span style="font-size:24px;font-weight:700;color:var(--text)">100%</span><br>免费</div>
+        <div><span style="font-size:24px;font-weight:700;color:var(--text)">{{ tools.length }}</span><br>{{ t('tools') }}</div>
+        <div><span style="font-size:24px;font-weight:700;color:var(--text)">0</span><br>{{ t('noUpload') }}</div>
+        <div><span style="font-size:24px;font-weight:700;color:var(--text)">100%</span><br>{{ t('free') }}</div>
       </div>
     </div>
   </div>
@@ -475,7 +479,7 @@
 
   <!-- Footer -->
   <footer style="text-align:center;padding:24px;font-size:13px;color:var(--text2)">
-    © 2026 Ren Echo · 所有工具均在浏览器本地运行，数据不会上传服务器
+    © 2026 Ren Echo · {{ t('footer') }}
   </footer>
 </div>
 
@@ -491,6 +495,96 @@ createApp({
       document.documentElement.setAttribute('data-theme', isDark.value ? 'dark' : 'light')
       localStorage.setItem('theme', isDark.value ? 'dark' : 'light')
     }
+
+    // Language
+    const lang = ref(localStorage.getItem('lang') || 'zh')
+    const i18n = {
+      zh: {
+        title: '在线工具箱', subtitle: '免费 · 无需注册 · 数据不离开浏览器',
+        search: '搜索工具...', noResult: '没有找到匹配的工具', tryOther: '试试其他关键词？',
+        tools: '个工具', noUpload: '数据上传', free: '免费',
+        all: '全部', encoding: '编解码', converter: '转换器', generator: '生成器', text: '文本处理', network: '网络工具', security: '安全工具',
+        // Tool names
+        json_name: 'JSON 格式化', json_desc: '美化、压缩、验证 JSON',
+        b64_name: 'Base64 编解码', b64_desc: '文本 Base64 编码/解码',
+        color_name: '颜色转换器', color_desc: 'HEX/RGB/HSL 互转',
+        ts_name: '时间戳转换', ts_desc: 'Unix 时间戳与日期互转',
+        uuid_name: 'UUID 生成器', uuid_desc: '批量生成 UUID v4',
+        hash_name: 'Hash 计算器', hash_desc: 'SHA-1/SHA-256/SHA-384/SHA-512',
+        regex_name: '正则表达式测试', regex_desc: '实时匹配高亮、捕获组',
+        url_name: 'URL 编解码', url_desc: 'URL 编码/解码',
+        md_name: 'Markdown 预览', md_desc: '实时 Markdown 渲染',
+        diff_name: '文本对比', diff_desc: '逐行文本差异对比',
+        base_name: '进制转换', base_desc: '二/八/十/十六进制互转',
+        pw_name: '密码生成器', pw_desc: '安全随机密码生成',
+        cron_name: 'Cron 解析器', cron_desc: '表达式可视化 + 预设',
+        lorem_name: 'Lorem 生成器', lorem_desc: '占位文本生成',
+        ip_name: 'IP 查询', ip_desc: '本机 IP 和归属地查询',
+        // Tool UI
+        inputJson: '输入 JSON', result: '结果', clear: '清空', compress: '压缩复制', validJson: '有效 JSON', topKeys: '个顶层键', bytes: '字节',
+        encode: '编码', decode: '解码', original: '原始文本', b64str: 'Base64 字符串', b64result: '编码结果', b64result2: '解码结果', invalidB64: '无效的 Base64',
+        hex: 'HEX', rgb: 'RGB', hsl: 'HSL', copyHex: '复制 HEX', copyRgb: '复制 RGB', copyHsl: '复制 HSL', copyRgba: '复制 RGBA',
+        unixTs: 'Unix 时间戳', datetime: '日期时间', now: '此刻', clickCopy: '点击任意行复制',
+        count: '数量', upper: '大写', braces: '花括号', regenerate: '重新生成', copyAll: '复制全部',
+        inputText: '输入文本', recalc: '重新计算', notSupported: '不支持', useSha256: '建议使用 SHA-256',
+        regexTest: '正则表达式', testText: '测试文本', matches: '个匹配', matchResult: '匹配结果',
+        input: '输入', output: '输出',
+        markdownSrc: 'Markdown 源码', preview: '预览',
+        origText: '原始文本', modifiedText: '修改后文本', added: '新增', removed: '删除',
+        dec: '十进制', bin: '二进制', oct: '八进制', bitView: '位视图（32位）',
+        length: '长度', lower: '小写', digits: '数字', symbols: '符号', genPassword: '生成密码', weak: '弱', medium: '中', strong: '强',
+        minute: '分钟', hour: '小时', day: '日', month: '月', weekday: '周', cronExpr: '表达式', execPlan: '执行计划', fieldDesc: '字段说明',
+        paragraphs: '段落', sentences: '句子', words: '单词', wordCount: '个单词',
+        myIp: '本机 IP 信息', refresh: '刷新', loading: '加载中...', failed: '获取失败', city: '城市', region: '地区', country: '国家', isp: '运营商', timezone: '时区', latlon: '经纬度', copyIp: '复制 IP 地址',
+        lookupOther: '查询其他 IP', inputIp: '输入 IP 地址...', query: '查询', querying: '查询中...',
+        footer: '所有工具均在浏览器本地运行，数据不会上传服务器',
+      },
+      en: {
+        title: 'Online Toolbox', subtitle: 'Free · No Registration · Data Stays in Browser',
+        search: 'Search tools...', noResult: 'No matching tools found', tryOther: 'Try other keywords?',
+        tools: 'Tools', noUpload: 'No Upload', free: 'Free',
+        all: 'All', encoding: 'Encoding', converter: 'Converter', generator: 'Generator', text: 'Text', network: 'Network', security: 'Security',
+        json_name: 'JSON Formatter', json_desc: 'Beautify, minify & validate JSON',
+        b64_name: 'Base64 Codec', b64_desc: 'Encode & decode Base64 text',
+        color_name: 'Color Converter', color_desc: 'HEX / RGB / HSL conversion',
+        ts_name: 'Timestamp', ts_desc: 'Unix timestamp & date conversion',
+        uuid_name: 'UUID Generator', uuid_desc: 'Batch generate UUID v4',
+        hash_name: 'Hash Calculator', hash_desc: 'SHA-1/SHA-256/SHA-384/SHA-512',
+        regex_name: 'Regex Tester', regex_desc: 'Live match highlight & capture groups',
+        url_name: 'URL Codec', url_desc: 'URL encode & decode',
+        md_name: 'Markdown Preview', md_desc: 'Live Markdown rendering',
+        diff_name: 'Text Diff', diff_desc: 'Line-by-line text comparison',
+        base_name: 'Base Converter', base_desc: 'Bin/Oct/Dec/Hex conversion',
+        pw_name: 'Password Generator', pw_desc: 'Secure random password generation',
+        cron_name: 'Cron Parser', cron_desc: 'Visual cron expression parser',
+        lorem_name: 'Lorem Generator', lorem_desc: 'Placeholder text generation',
+        ip_name: 'IP Lookup', ip_desc: 'Query your IP address & geolocation',
+        inputJson: 'Input JSON', result: 'Result', clear: 'Clear', compress: 'Copy Minified', validJson: 'Valid JSON', topKeys: 'top-level keys', bytes: 'bytes',
+        encode: 'Encode', decode: 'Decode', original: 'Original Text', b64str: 'Base64 String', b64result: 'Encoded', b64result2: 'Decoded', invalidB64: 'Invalid Base64',
+        hex: 'HEX', rgb: 'RGB', hsl: 'HSL', copyHex: 'Copy HEX', copyRgb: 'Copy RGB', copyHsl: 'Copy HSL', copyRgba: 'Copy RGBA',
+        unixTs: 'Unix Timestamp', datetime: 'Date & Time', now: 'Now', clickCopy: 'Click any row to copy',
+        count: 'Count', upper: 'Uppercase', braces: 'Braces', regenerate: 'Regenerate', copyAll: 'Copy All',
+        inputText: 'Input Text', recalc: 'Recalculate', notSupported: 'Not supported', useSha256: 'Use SHA-256 instead',
+        regexTest: 'Regex', testText: 'Test Text', matches: 'matches', matchResult: 'Match Results',
+        input: 'Input', output: 'Output',
+        markdownSrc: 'Markdown Source', preview: 'Preview',
+        origText: 'Original Text', modifiedText: 'Modified Text', added: 'Added', removed: 'Removed',
+        dec: 'Decimal', bin: 'Binary', oct: 'Octal', bitView: 'Bit View (32-bit)',
+        length: 'Length', lower: 'Lowercase', digits: 'Digits', symbols: 'Symbols', genPassword: 'Generate', weak: 'Weak', medium: 'Med', strong: 'Strong',
+        minute: 'Min', hour: 'Hour', day: 'Day', month: 'Month', weekday: 'Weekday', cronExpr: 'Expression', execPlan: 'Execution Plan', fieldDesc: 'Field Description',
+        paragraphs: 'Paragraphs', sentences: 'Sentences', words: 'Words', wordCount: 'words',
+        myIp: 'My IP Info', refresh: 'Refresh', loading: 'Loading...', failed: 'Failed', city: 'City', region: 'Region', country: 'Country', isp: 'ISP', timezone: 'Timezone', latlon: 'Lat/Lon', copyIp: 'Copy IP',
+        lookupOther: 'Lookup Other IP', inputIp: 'Enter IP address...', query: 'Query', querying: 'Querying...',
+        footer: 'All tools run locally in your browser. No data is uploaded.',
+      }
+    }
+    function t(key) { return i18n[lang.value][key] || key }
+    function toggleLang() {
+      lang.value = lang.value === 'zh' ? 'en' : 'zh'
+      localStorage.setItem('lang', lang.value)
+      document.documentElement.lang = lang.value === 'zh' ? 'zh-CN' : 'en'
+      document.title = lang.value === 'zh' ? 'Ren Echo 工具箱 — 免费在线开发者工具' : 'Ren Echo Toolbox — Free Online Developer Tools'
+    }
     onMounted(() => {
       const s = localStorage.getItem('theme')
       if (s === 'dark' || (!s && window.matchMedia('(prefers-color-scheme:dark)').matches)) {
@@ -502,34 +596,36 @@ createApp({
     // Navigation
     const page = ref('home')
     const search = ref('')
-    const activeCat = ref('全部')
-    const categories = ['全部', '编解码', '转换器', '生成器', '文本处理', '网络工具', '安全工具']
+    const activeCat = ref(0)
+    const categories = computed(() => [
+      t('all'), t('encoding'), t('converter'), t('generator'), t('text'), t('network'), t('security')
+    ])
 
-    const tools = [
-      {id:'json',name:'JSON 格式化',desc:'美化、压缩、验证 JSON',icon:'{}',cat:'文本处理',gradient:'linear-gradient(135deg,#f59e0b,#f97316)'},
-      {id:'base64',name:'Base64 编解码',desc:'文本 Base64 编码/解码',icon:'B64',cat:'编解码',gradient:'linear-gradient(135deg,#10b981,#14b8a6)'},
-      {id:'color',name:'颜色转换器',desc:'HEX/RGB/HSL 互转',icon:'🎨',cat:'转换器',gradient:'linear-gradient(135deg,#ec4899,#f43f5e)'},
-      {id:'timestamp',name:'时间戳转换',desc:'Unix 时间戳与日期互转',icon:'⏱',cat:'转换器',gradient:'linear-gradient(135deg,#0ea5e9,#3b82f6)'},
-      {id:'uuid',name:'UUID 生成器',desc:'批量生成 UUID v4',icon:'🔑',cat:'生成器',gradient:'linear-gradient(135deg,#8b5cf6,#a855f7)'},
-      {id:'hash',name:'Hash 计算器',desc:'SHA-1/SHA-256/SHA-512 哈希',icon:'#',cat:'安全工具',gradient:'linear-gradient(135deg,#ef4444,#f43f5e)'},
-      {id:'regex',name:'正则表达式测试',desc:'实时匹配、高亮、捕获组',icon:'.*',cat:'文本处理',gradient:'linear-gradient(135deg,#6366f1,#3b82f6)'},
-      {id:'url-codec',name:'URL 编解码',desc:'URL 编码/解码转换',icon:'%',cat:'编解码',gradient:'linear-gradient(135deg,#06b6d4,#0ea5e9)'},
-      {id:'markdown',name:'Markdown 预览',desc:'实时 Markdown 渲染',icon:'M↓',cat:'文本处理',gradient:'linear-gradient(135deg,#475569,#374151)'},
-      {id:'text-diff',name:'文本对比',desc:'逐行文本差异对比',icon:'≠',cat:'文本处理',gradient:'linear-gradient(135deg,#d97706,#eab308)'},
-      {id:'number-base',name:'进制转换',desc:'二/八/十/十六进制互转',icon:'0x',cat:'转换器',gradient:'linear-gradient(135deg,#14b8a6,#06b6d4)'},
-      {id:'password',name:'密码生成器',desc:'安全随机密码生成',icon:'🔒',cat:'安全工具',gradient:'linear-gradient(135deg,#16a34a,#10b981)'},
-      {id:'cron',name:'Cron 解析器',desc:'Cron 表达式可视化',icon:'⏰',cat:'生成器',gradient:'linear-gradient(135deg,#f97316,#f59e0b)'},
-      {id:'lorem',name:'Lorem 生成器',desc:'占位文本生成',icon:'Lp',cat:'生成器',gradient:'linear-gradient(135deg,#64748b,#475569)'},
-      {id:'ip',name:'IP 查询',desc:'本机 IP 和归属地查询',icon:'🌐',cat:'网络工具',gradient:'linear-gradient(135deg,#2563eb,#6366f1)'},
-    ]
+    const tools = computed(() => [
+      {id:'json',name:t('json_name'),desc:t('json_desc'),icon:'{}',cat:t('text'),gradient:'linear-gradient(135deg,#f59e0b,#f97316)'},
+      {id:'base64',name:t('b64_name'),desc:t('b64_desc'),icon:'B64',cat:t('encoding'),gradient:'linear-gradient(135deg,#10b981,#14b8a6)'},
+      {id:'color',name:t('color_name'),desc:t('color_desc'),icon:'🎨',cat:t('converter'),gradient:'linear-gradient(135deg,#ec4899,#f43f5e)'},
+      {id:'timestamp',name:t('ts_name'),desc:t('ts_desc'),icon:'⏱',cat:t('converter'),gradient:'linear-gradient(135deg,#0ea5e9,#3b82f6)'},
+      {id:'uuid',name:t('uuid_name'),desc:t('uuid_desc'),icon:'🔑',cat:t('generator'),gradient:'linear-gradient(135deg,#8b5cf6,#a855f7)'},
+      {id:'hash',name:t('hash_name'),desc:t('hash_desc'),icon:'#',cat:t('security'),gradient:'linear-gradient(135deg,#ef4444,#f43f5e)'},
+      {id:'regex',name:t('regex_name'),desc:t('regex_desc'),icon:'.*',cat:t('text'),gradient:'linear-gradient(135deg,#6366f1,#3b82f6)'},
+      {id:'url-codec',name:t('url_name'),desc:t('url_desc'),icon:'%',cat:t('encoding'),gradient:'linear-gradient(135deg,#06b6d4,#0ea5e9)'},
+      {id:'markdown',name:t('md_name'),desc:t('md_desc'),icon:'M↓',cat:t('text'),gradient:'linear-gradient(135deg,#475569,#374151)'},
+      {id:'text-diff',name:t('diff_name'),desc:t('diff_desc'),icon:'≠',cat:t('text'),gradient:'linear-gradient(135deg,#d97706,#eab308)'},
+      {id:'number-base',name:t('base_name'),desc:t('base_desc'),icon:'0x',cat:t('converter'),gradient:'linear-gradient(135deg,#14b8a6,#06b6d4)'},
+      {id:'password',name:t('pw_name'),desc:t('pw_desc'),icon:'🔒',cat:t('security'),gradient:'linear-gradient(135deg,#16a34a,#10b981)'},
+      {id:'cron',name:t('cron_name'),desc:t('cron_desc'),icon:'⏰',cat:t('generator'),gradient:'linear-gradient(135deg,#f97316,#f59e0b)'},
+      {id:'lorem',name:t('lorem_name'),desc:t('lorem_desc'),icon:'Lp',cat:t('generator'),gradient:'linear-gradient(135deg,#64748b,#475569)'},
+      {id:'ip',name:t('ip_name'),desc:t('ip_desc'),icon:'🌐',cat:t('network'),gradient:'linear-gradient(135deg,#2563eb,#6366f1)'},
+    ])
 
-    const filteredTools = computed(() => tools.filter(t => {
-      const cat = activeCat.value === '全部' || t.cat === activeCat.value
-      const q = !search.value || t.name.includes(search.value) || t.desc.includes(search.value) || t.cat.includes(search.value)
+    const filteredTools = computed(() => tools.value.filter(tool => {
+      const cat = activeCat.value === 0 || tool.cat === categories.value[activeCat.value]
+      const q = !search.value || tool.name.includes(search.value) || tool.desc.includes(search.value) || tool.cat.includes(search.value)
       return cat && q
     }))
 
-    const currentTool = computed(() => tools.find(t => t.id === page.value) || tools[0])
+    const currentTool = computed(() => tools.value.find(t => t.id === page.value) || tools.value[0])
     function openTool(id) { page.value = id; window.scrollTo(0, 0) }
 
     // Copy
@@ -681,7 +777,7 @@ createApp({
     onMounted(fetchMyIP)
 
     return {
-      isDark, toggleTheme, page, search, activeCat, categories, tools, filteredTools, currentTool, openTool, copy, copied,
+      isDark, toggleTheme, lang, toggleLang, t, page, search, activeCat, categories, tools, filteredTools, currentTool, openTool, copy, copied,
       jsonInput, jsonIndent, jsonError, jsonFormatted, jsonCompressed, jsonKeys,
       b64Mode, b64Input, b64Output, b64Swap,
       colorHex, colorR, colorG, colorB, colorH, colorS, colorL,
