@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ren Echo 工具箱 — 免费在线开发者工具</title>
+  <meta name="description" content="免费在线开发者工具箱 — JSON格式化、Base64编解码、颜色转换、正则测试、IP查询等15+实用小工具" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230ea5e9'/><text x='16' y='22' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold' font-size='18'>T</text></svg>" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#ffffff;--bg2:#f8fafc;--bg3:#f1f5f9;
+      --text:#0f172a;--text2:#64748b;
+      --border:#e2e8f0;
+      --primary:#0ea5e9;--primary-hover:#0284c7;
+      --shadow:0 1px 3px rgba(0,0,0,.1);
+      --shadow-hover:0 10px 15px -3px rgba(0,0,0,.1);
+    }
+    [data-theme="dark"]{
+      --bg:#0f172a;--bg2:#1e293b;--bg3:#334155;
+      --text:#f1f5f9;--text2:#94a3b8;
+      --border:#334155;
+      --shadow:0 1px 3px rgba(0,0,0,.3);
+      --shadow-hover:0 10px 15px -3px rgba(0,0,0,.4);
+    }
+    body{font-family:'Inter','Noto Sans SC',system-ui,sans-serif;background:var(--bg);color:var(--text);transition:background .3s,color .3s;line-height:1.6}
+    a{color:var(--primary);text-decoration:none}
+    ::-webkit-scrollbar{width:6px}
+    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+    @keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    .animate{animation:fadeInUp .4s ease-out forwards}
+    .tool-card{background:var(--bg2);border:1px solid var(--border-color,var(--border));border-radius:12px;padding:20px;cursor:pointer;transition:all .3s;box-shadow:var(--shadow)}
+    .tool-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-4px);border-color:var(--primary)}
+    .btn{padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-size:14px;transition:all .2s}
+    .btn-primary{background:var(--primary);color:#fff}
+    .btn-primary:hover{background:var(--primary-hover)}
+    .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text2)}
+    .btn-outline:hover{background:var(--bg3)}
+    input,textarea,select{background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 14px;font-size:14px;outline:none;transition:border-color .2s;font-family:inherit}
+    input:focus,textarea:focus{border-color:var(--primary)}
+    textarea{font-family:'JetBrains Mono',monospace;resize:none}
+    pre{font-family:'JetBrains Mono',monospace;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:16px;overflow:auto;font-size:13px;white-space:pre-wrap;word-break:break-all}
+    .badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;background:var(--bg3);color:var(--text2)}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    @media(max-width:768px){.grid-2,.grid-3{grid-template-columns:1fr}}
+    .fade-enter-active,.fade-leave-active{transition:opacity .2s}
+    .fade-enter-from,.fade-leave-to{opacity:0}
+    mark{background:rgba(14,165,233,.2);padding:0 2px;border-radius:2px}
+    .slider{-webkit-appearance:none;height:6px;border-radius:3px;background:var(--bg3);outline:none}
+    .slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--primary);cursor:pointer}
+    .checkbox{accent-color:var(--primary)}
+  </style>
+</head>
+<body>
+<div id="app">
+  <!-- Navbar -->
+  <nav style="position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);border-bottom:1px solid var(--border);background:color-mix(in srgb, var(--bg) 85%, transparent)">
+    <div style="max-width:1100px;margin:0 auto;padding:0 16px;height:56px;display:flex;align-items:center;justify-content:space-between">
+      <a href="#" @click.prevent="page='home'" style="display:flex;align-items:center;gap:10px;color:var(--text)">
+        <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#0ea5e9,#8b5cf6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold;font-size:14px">T</div>
+        <span style="font-weight:600;font-size:15px" class="hide-mobile">Ren Echo 工具箱</span>
+      </a>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button v-if="page!=='home'" @click="page='home'" class="btn btn-outline" style="font-size:13px">← 首页</button>
+        <button @click="toggleTheme" class="btn btn-outline" style="width:36px;height:36px;padding:0;display:flex;align-items:center;justify-content:center;font-size:16px">{{ isDark ? '☀️' : '🌙' }}</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HOME PAGE -->
+  <div v-if="page==='home'" style="max-width:1100px;margin:0 auto;padding:48px 16px">
+    <div style="text-align:center;margin-bottom:48px" class="animate">
+      <h1 style="font-size:clamp(2rem,5vw,3rem);font-weight:700;margin-bottom:12px">
+        <span style="background:linear-gradient(135deg,#0ea5e9,#8b5cf6,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent">在线工具箱</span>
+      </h1>
+      <p style="color:var(--text2);font-size:18px;margin-bottom:32px">免费 · 无需注册 · 数据不离开浏览器</p>
+      <div style="max-width:400px;margin:0 auto;position:relative">
+        <input v-model="search" type="text" placeholder="搜索工具..." style="width:100%;padding:12px 16px 12px 40px;border-radius:12px;font-size:15px" />
+        <svg style="position:absolute;left:12px;top:14px;color:var(--text2)" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </div>
+    </div>
+
+    <!-- Category Tabs -->
+    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:32px">
+      <button v-for="c in categories" :key="c" @click="activeCat=c"
+        :style="{background:activeCat===c?'var(--primary)':'transparent',color:activeCat===c?'#fff':'var(--text2)',border:activeCat===c?'none':'1px solid var(--border)'}"
+        class="btn" style="border-radius:999px;font-size:13px;padding:6px 16px">{{ c }}</button>
+    </div>
+
+    <!-- Tools Grid -->
+    <div class="grid-3">
+      <div v-for="(t,i) in filteredTools" :key="t.id" @click="openTool(t.id)" class="tool-card animate" :style="{animationDelay:i*0.04+'s'}">
+        <div style="display:flex;gap:14px">
+          <div style="width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold;font-size:16px;flex-shrink:0" :style="{background:t.gradient}">{{ t.icon }}</div>
+          <div>
+            <div style="font-weight:600;font-size:15px;margin-bottom:2px">{{ t.name }}</div>
+            <div style="font-size:13px;color:var(--text2)">{{ t.desc }}</div>
+            <span class="badge" style="margin-top:6px">{{ t.cat }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="filteredTools.length===0" style="text-align:center;padding:80px 0;color:var(--text2)">
+      <div style="font-size:48px;margin-bottom:16px">🔍</div>
+      <p>没有找到匹配的工具</p>
+    </div>
+
+    <div style="text-align:center;margin-top:64px;color:var(--text2);font-size:14px">
+      <div style="display:inline-flex;gap:48px">
+        <div><span style="font-size:24px;font-weight:700;color:var(--text)">{{ tools.length }}</span><br>个工具</div>
+        <div><span style="font-size:24px;font-weight:700;color:var(--text)">0</span><br>数据上传</div>
+        <div><span style="font-size:24px;font-weight:700;color:var(--text)">100%</span><br>免费</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOOL PAGES -->
+  <div v-if="page!=='home'" style="max-width:900px;margin:0 auto;padding:32px 16px" class="animate">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
+      <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#0ea5e9,#8b5cf6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold">{{ currentTool.icon }}</div>
+      <div>
+        <h1 style="font-size:20px;font-weight:700">{{ currentTool.name }}</h1>
+        <p style="font-size:13px;color:var(--text2)">{{ currentTool.desc }}</p>
+      </div>
+    </div>
+
+    <!-- JSON Formatter -->
+    <div v-if="page==='json'" class="grid-2">
+      <div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+          <label style="font-size:13px;font-weight:500">输入 JSON</label>
+          <div style="display:flex;gap:8px">
+            <select v-model="jsonIndent" style="font-size:12px;padding:4px 8px;border-radius:6px">
+              <option value="2">2空格</option><option value="4">4空格</option>
+            </select>
+            <button @click="jsonInput=''" class="btn" style="font-size:12px;color:#ef4444">清空</button>
+          </div>
+        </div>
+        <textarea v-model="jsonInput" style="width:100%;height:320px;padding:16px" placeholder="粘贴 JSON..."></textarea>
+        <div v-if="jsonError" style="font-size:13px;color:#ef4444;margin-top:8px">❌ {{ jsonError }}</div>
+        <div v-else-if="jsonFormatted" style="font-size:12px;color:var(--text2);margin-top:8px">✅ 有效 JSON · {{ jsonKeys }} 个顶层键</div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+          <label style="font-size:13px;font-weight:500">结果</label>
+          <div style="display:flex;gap:8px">
+            <button @click="copy(jsonFormatted)" class="btn btn-primary" style="font-size:12px">{{ copied?'已复制✓':'复制' }}</button>
+            <button @click="copy(jsonCompressed)" class="btn btn-outline" style="font-size:12px">压缩复制</button>
+          </div>
+        </div>
+        <pre style="height:320px">{{ jsonFormatted || '结果将显示在这里...' }}</pre>
+      </div>
+    </div>
+
+    <!-- Base64 -->
+    <div v-if="page==='base64'">
+      <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:16px">
+        <button @click="b64Mode='encode'" class="btn" :style="{background:b64Mode==='encode'?'var(--primary)':'transparent',color:b64Mode==='encode'?'#fff':'var(--text2)',border:b64Mode==='encode'?'none':'1px solid var(--border)'}">编码</button>
+        <button @click="b64Swap" class="btn btn-outline" style="border-radius:50%;width:40px;height:40px;padding:0">⇄</button>
+        <button @click="b64Mode='decode'" class="btn" :style="{background:b64Mode==='decode'?'var(--primary)':'transparent',color:b64Mode==='decode'?'#fff':'var(--text2)',border:b64Mode==='decode'?'none':'1px solid var(--border)'}">解码</button>
+      </div>
+      <div class="grid-2">
+        <div><label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px">{{ b64Mode==='encode'?'原始文本':'Base64 字符串' }}</label>
+          <textarea v-model="b64Input" style="width:100%;height:220px;padding:16px"></textarea></div>
+        <div><div style="display:flex;justify-content:space-between;margin-bottom:8px">
+          <label style="font-size:13px;font-weight:500">{{ b64Mode==='encode'?'编码结果':'解码结果' }}</label>
+          <button @click="copy(b64Output)" class="btn btn-primary" style="font-size:12px">{{ copied?'已复制✓':'复制' }}</button>
+        </div>
+          <pre style="height:220px">{{ b64Output }}</pre></div>
+      </div>
+    </div>
+
+    <!-- Color Converter -->
+    <div v-if="page==='color'">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px">
+        <div style="width:80px;height:80px;border-radius:12px;border:2px solid rgba(255,255,255,.2);box-shadow:0 4px 12px rgba(0,0,0,.15)" :style="{background:colorHex}"></div>
+        <div>
+          <p style="font-size:20px;font-family:monospace;font-weight:700">{{ colorHex }}</p>
+          <p style="font-size:13px;color:var(--text2)">rgb({{ colorR }}, {{ colorG }}, {{ colorB }})</p>
+          <p style="font-size:13px;color:var(--text2)">hsl({{ colorH }}, {{ colorS }}%, {{ colorL }}%)</p>
+        </div>
+      </div>
+      <div class="grid-3">
+        <div style="border:1px solid var(--border);border-radius:12px;padding:16px;background:var(--bg2)">
+          <h3 style="font-weight:500;margin-bottom:12px">HEX</h3>
+          <input v-model="colorHex" type="text" style="width:100%" />
+        </div>
+        <div style="border:1px solid var(--border);border-radius:12px;padding:16px;background:var(--bg2)">
+          <h3 style="font-weight:500;margin-bottom:12px">RGB</h3>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="font-size:12px;color:#ef4444;width:16px">R</span>
+            <input v-model.number="colorR" type="range" min="0" max="255" class="slider" style="flex:1" />
+            <span style="font-size:12px;font-family:monospace;width:32px">{{ colorR }}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="font-size:12px;color:#22c55e;width:16px">G</span>
+            <input v-model.number="colorG" type="range" min="0" max="255" class="slider" style="flex:1" />
+            <span style="font-size:12px;font-family:monospace;width:32px">{{ colorG }}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:12px;color:#3b82f6;width:16px">B</span>
+            <input v-model.number="colorB" type="range" min="0" max="255" class="slider" style="flex:1" />
+            <span style="font-size:12px;font-family:monospace;width:32px">{{ colorB }}</span>
+          </div>
+        </div>
+        <div style="border:1px solid var(--border);border-radius:12px;padding:16px;background:var(--bg2)">
+          <h3 style="font-weight:500;margin-bottom:12px">HSL</h3>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="font-size:12px;width:16px">H</span>
+            <input v-model.number="colorH" type="range" min="0" max="360" class="slider" style="flex:1" />
+            <span style="font-size:12px;font-family:monospace;width:32px">{{ colorH }}°</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="font-size:12px;width:16px">S</span>
+            <input v-model.number="colorS" type="range" min="0" max="100" class="slider" style="flex:1" />
+            <span style="font-size:12px;font-family:monospace;width:32px">{{ colorS }}%</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:12px;width:16px">L</span>
+            <input v-model.number="colorL" type="range" min="0" max="100" class="slider" style="flex:1" />
+            <span style="font-size:12px;font-family:monospace;width:32px">{{ colorL }}%</span>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:20px">
+        <button v-for="f in [{l:'HEX',v:colorHex},{l:'RGB',v:`rgb(${colorR},${colorG},${colorB})`},{l:'HSL',v:`hsl(${colorH},${colorS}%,${colorL}%)`}]" :key="f.l" @click="copy(f.v)" class="btn btn-outline" style="font-size:12px">{{ copied?'已复制✓':'复制 '+f.l }}</button>
+      </div>
+    </div>
+
+    <!-- Timestamp -->
+    <div v-if="page==='timestamp'">
+      <div class="grid-2" style="margin-bottom:20px">
+        <div><label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px">Unix 时间戳</label>
+          <div style="display:flex;gap:8px"><input v-model.number="tsVal" @input="tsToDate" type="number" style="flex:1;font-size:18px;font-family:monospace;padding:12px" /><button @click="tsVal=Math.floor(Date.now()/1000);tsToDate()" class="btn btn-primary" style="white-space:nowrap">此刻</button></div></div>
+        <div><label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px">日期时间</label>
+          <input v-model="tsDate" @input="dateToTs" type="datetime-local" style="width:100%;font-size:18px;padding:12px" /></div>
+      </div>
+      <div style="border:1px solid var(--border);border-radius:12px;overflow:hidden">
+        <div v-for="(f,i) in tsFormats" :key="f.l" @click="copy(f.v)" style="display:flex;justify-content:space-between;padding:12px 16px;cursor:pointer;transition:background .2s" :style="{borderBottom:i<tsFormats.length-1?'1px solid var(--border)':'none',background:'var(--bg2)'}">
+          <span style="font-size:13px;color:var(--text2)">{{ f.l }}</span>
+          <span style="font-size:13px;font-family:monospace">{{ f.v }}</span>
+        </div>
+      </div>
+      <p style="font-size:12px;color:var(--text2);text-align:center;margin-top:12px">点击任意行复制</p>
+    </div>
+
+    <!-- UUID -->
+    <div v-if="page==='uuid'">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:20px">
+        <div style="display:flex;align-items:center;gap:8px"><label style="font-size:13px">数量</label><input v-model.number="uuidCount" type="number" min="1" max="100" style="width:60px;padding:6px 10px" /></div>
+        <label style="font-size:13px;display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" v-model="uuidUpper" class="checkbox" /> 大写</label>
+        <label style="font-size:13px;display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" v-model="uuidBraces" class="checkbox" /> 花括号</label>
+        <button @click="genUUID" class="btn btn-primary">🔄 重新生成</button>
+        <button @click="copy(uuidList.join('\n'))" class="btn btn-outline">{{ copied?'已复制✓':'复制全部' }}</button>
+      </div>
+      <div style="border:1px solid var(--border);border-radius:12px;overflow:hidden">
+        <div v-for="(u,i) in uuidList" :key="i" @click="copy(u)" style="display:flex;align-items:center;padding:10px 16px;cursor:pointer;font-family:monospace;font-size:13px;transition:background .2s" :style="{borderBottom:i<uuidList.length-1?'1px solid var(--border)':'none',background:'var(--bg2)'}">
+          <span style="width:28px;font-size:11px;color:var(--text2);margin-right:12px">{{ i+1 }}</span>{{ u }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Hash Calculator -->
+    <div v-if="page==='hash'">
+      <label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px">输入文本</label>
+      <textarea v-model="hashInput" @input="calcHash" style="width:100%;height:120px;padding:16px;margin-bottom:16px"></textarea>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div v-for="r in hashResults" :key="r.name" @click="copy(r.value)" style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:background .2s;background:var(--bg2)">
+          <span style="font-weight:500;width:80px;font-size:14px">{{ r.name }}</span>
+          <span style="font-family:monospace;font-size:13px;flex:1;margin-left:16px;word-break:break-all" :style="{color:r.value.startsWith('⚠')?'#f59e0b':'var(--text)'}">{{ r.value }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Regex Tester -->
+    <div v-if="page==='regex'">
+      <div style="margin-bottom:16px">
+        <label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px">正则表达式</label>
+        <div style="display:flex;gap:8px">
+          <span style="padding:8px 12px;font-family:monospace;font-size:13px;background:var(--bg3);border-radius:8px;color:var(--text2)">/</span>
+          <input v-model="regexPattern" type="text" style="flex:1;font-family:monospace" placeholder="输入正则..." />
+          <span style="padding:8px 12px;font-family:monospace;font-size:13px;background:var(--bg3);border-radius:8px;color:var(--text2)">/{{ regexFlags }}</span>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button v-for="f in ['g','i','m','s']" :key="f" @click="toggleRegexFlag(f)" class="btn" style="font-family:monospace;font-size:12px;padding:4px 12px;border-radius:6px"
+            :style="{background:regexFlags.includes(f)?'var(--primary)':'transparent',color:regexFlags.includes(f)?'#fff':'var(--text2)',border:regexFlags.includes(f)?'none':'1px solid var(--border)'}">{{ f }}</button>
+        </div>
+        <p v-if="regexError" style="font-size:13px;color:#ef4444;margin-top:8px">❌ {{ regexError }}</p>
+      </div>
+      <div class="grid-2">
+        <div><label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px">测试文本</label>
+          <textarea v-model="regexText" style="width:100%;height:200px;padding:16px;font-family:monospace"></textarea></div>
+        <div><label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px">匹配高亮 <span style="font-weight:normal;color:var(--text2)">（{{ regexMatches.length }} 个匹配）</span></label>
+          <div style="width:100%;height:200px;padding:16px;border:1px solid var(--border);border-radius:12px;overflow:auto;font-family:monospace;font-size:13px;white-space:pre-wrap;background:var(--bg3)" v-html="regexHighlighted"></div></div>
+      </div>
+      <div v-if="regexMatches.length" style="margin-top:16px;border:1px solid var(--border);border-radius:12px;overflow:hidden">
+        <div style="padding:8px 16px;font-size:12px;font-weight:500;background:var(--bg3);color:var(--text2)">匹配结果</div>
+        <div v-for="(m,i) in regexMatches" :key="i" style="display:flex;gap:12px;padding:8px 16px;font-family:monospace;font-size:13px" :style="{borderBottom:i<regexMatches.length-1?'1px solid var(--border)':'none',background:'var(--bg2)'}">
+          <span style="font-size:11px;color:var(--text2);width:24px">#{{ i+1 }}</span>
+          <span style="color:#0ea5e9">"{{ m.match }}"</span>
+          <span style="font-size:11px;color:var(--text2)">index: {{ m.index }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- URL Codec -->
+    <div v-if="page==='url-codec'">
+      <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:16px">
+        <button @click="urlMode='encode'" class="btn" :style="{background:urlMode==='encode'?'var(--primary)':'transparent',color:urlMode==='encode'?'#fff':'var(--text2)',border:urlMode==='encode'?'none':'1px solid var(--border)'}">编码</button>
+        <button @click="urlSwap" class="btn btn-outline" style="border-radius:50%;width:40px;height:40px;padding:0">⇄</button>
+        <button @click="urlMode='decode'" class="btn" :style="{background:urlMode==='decode'?'var(--primary)':'transparent',color:urlMode==='decode'?'#fff':'var(--text2)',border:urlMode==='decode'?'none':'1px solid var(--border)'}">解码</button>
+      </div>
+      <div class="grid-2">
+        <div><label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px">输入</label>
+          <textarea v-model="urlInput" style="width:100%;height:180px;padding:16px"></textarea></div>
+        <div><div style="display:flex;justify-content:space-between;margin-bottom:8px">
+          <label style="font-size:13px;font-weight:500">输出</label>
+          <button @click="copy(urlOutput)" class="btn btn-primary" style="font-size:12px">{{ copied?'已复制✓':'复制' }}</button>
+        </div>
+          <pre style="height:180px">{{ urlOutput }}</pre></div>
+      </div>
+    </div>
+
+    <!-- Markdown Preview -->
+    <div v-if="page==='markdown'" class="grid-2">
+      <div><label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px">Markdown 源码</label>
+        <textarea v-model="mdInput" style="width:100%;height:500px;padding:16px"></textarea></div>
+      <div><label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px">预览</label>
+        <div style="width:100%;height:500px;padding:24px;border:1px solid var(--border);border-radius:12px;overflow:auto;background:var(--bg2);line-height:1.8" v-html="mdHtml"></div></div>
+    </div>
+
+    <!-- Text Diff -->
+    <div v-if="page==='text-diff'">
+      <div class="grid-2" style="margin-bottom:16px">
+        <div><label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px">原始文本</label>
+          <textarea v-model="diffA" style="width:100%;height:160px;padding:16px"></textarea></div>
+        <div><label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px">修改后文本</label>
+          <textarea v-model="diffB" style="width:100%;height:160px;padding:16px"></textarea></div>
+      </div>
+      <div style="display:flex;gap:16px;margin-bottom:16px;font-size:13px;color:var(--text2)">
+        <span style="color:#22c55e">+{{ diffStats.added }} 新增</span>
+        <span style="color:#ef4444">-{{ diffStats.removed }} 删除</span>
+      </div>
+      <div style="border:1px solid var(--border);border-radius:12px;overflow:hidden">
+        <div v-for="(d,i) in diffResult" :key="i" style="display:flex;font-family:monospace;font-size:13px" :style="{background:d.type==='added'?'rgba(34,197,94,.1)':d.type==='removed'?'rgba(239,68,68,.1)':'var(--bg2)',borderBottom:i<diffResult.length-1?'1px solid var(--border)':'none'}">
+          <span style="width:40px;padding:8px;text-align:center;font-size:11px;color:var(--text2);border-right:1px solid var(--border);flex-shrink:0">{{ d.line }}</span>
+          <span style="width:24px;padding:8px;text-align:center;flex-shrink:0" :style="{color:d.type==='added'?'#22c55e':d.type==='removed'?'#ef4444':'var(--text2)'}">{{ d.type==='added'?'+':d.type==='removed'?'-':' ' }}</span>
+          <span style="padding:8px;word-break:break-all">{{ d.text }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Number Base -->
+    <div v-if="page==='number-base'" class="grid-2">
+      <div v-for="b in [{l:'十进制 (DEC)',v:numDec,upd:v=>{numDec=parseInt(v)||0},pfx:''},{l:'十六进制 (HEX)',v:numHex,upd:v=>{const n=parseInt(v,16);if(!isNaN(n))numDec=n},pfx:'0x'},{l:'二进制 (BIN)',v:numBin,upd:v=>{const n=parseInt(v,2);if(!isNaN(n))numDec=n},pfx:'0b'},{l:'八进制 (OCT)',v:numOct,upd:v=>{const n=parseInt(v,8);if(!isNaN(n))numDec=n},pfx:'0o'}]" :key="b.l" style="border:1px solid var(--border);border-radius:12px;padding:16px;background:var(--bg2)">
+        <label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px">{{ b.l }}</label>
+        <div style="display:flex;gap:8px">
+          <span style="padding:8px 12px;font-family:monospace;font-size:13px;background:var(--bg3);border-radius:8px;color:var(--text2)">{{ b.pfx }}</span>
+          <input :value="b.v" @input="b.upd($event.target.value)" type="text" style="flex:1;font-family:monospace;font-size:18px" />
+          <button @click="copy(String(b.v))" class="btn btn-outline" style="padding:8px 12px">📋</button>
+        </div>
+      </div>
+      <div style="grid-column:1/-1;border:1px solid var(--border);border-radius:12px;padding:16px;background:var(--bg2)">
+        <label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px">位视图（32位）</label>
+        <div style="display:flex;flex-wrap:wrap;gap:4px">
+          <div v-for="i in 32" :key="i" style="width:28px;height:28px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;font-family:monospace" :style="{background:(numDec>>>(32-i))&1?'#0ea5e9':'var(--bg3)',color:(numDec>>>(32-i))&1?'#fff':'var(--text2)'}">{{ (numDec>>>(32-i))&1 }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Password Generator -->
+    <div v-if="page==='password'">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:8px"><label style="font-size:13px">长度</label><input v-model.number="pwLen" type="range" min="4" max="64" class="slider" style="width:100px" /><span style="font-family:monospace;font-size:13px;width:24px">{{ pwLen }}</span></div>
+        <label style="font-size:13px;display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" v-model="pwUpper" class="checkbox" /> 大写</label>
+        <label style="font-size:13px;display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" v-model="pwLower" class="checkbox" /> 小写</label>
+        <label style="font-size:13px;display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" v-model="pwDigits" class="checkbox" /> 数字</label>
+        <label style="font-size:13px;display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox" v-model="pwSymbols" class="checkbox" /> 符号</label>
+      </div>
+      <button @click="genPw" class="btn btn-primary" style="margin-bottom:16px">🔄 生成密码</button>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div v-for="(p,i) in pwList" :key="i" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid var(--border);border-radius:12px;background:var(--bg2)">
+          <span style="font-family:monospace;font-size:13px;flex:1;word-break:break-all">{{ p }}</span>
+          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+            <div style="width:60px;height:6px;border-radius:3px;background:var(--bg3);overflow:hidden"><div style="height:100%;border-radius:3px;transition:all .3s" :style="{background:pwStrength(p).color,width:pwStrength(p).width}"></div></div>
+            <span style="font-size:11px;width:16px" :style="{color:pwStrength(p).color}">{{ pwStrength(p).label }}</span>
+            <button @click="copy(p)" class="btn btn-primary" style="font-size:12px;padding:4px 12px">{{ copied?'✓':'复制' }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cron Parser -->
+    <div v-if="page==='cron'">
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px">
+        <button v-for="p in cronPresets" :key="p.label" @click="applyCron(p.cron)" class="btn btn-outline" style="font-size:12px;border-radius:999px">{{ p.label }}</button>
+      </div>
+      <div style="border:1px solid var(--border);border-radius:12px;padding:20px;background:var(--bg2);margin-bottom:20px">
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:16px">
+          <div v-for="(l,k) in {min:'分钟',hour:'小时',day:'日',month:'月',weekday:'周'}" :key="k" style="text-align:center">
+            <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px">{{ l }}</label>
+            <input v-model="cronFields[k]" type="text" style="width:100%;text-align:center;font-family:monospace;padding:8px" />
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <code style="flex:1;text-align:center;font-size:18px;padding:8px;background:var(--bg3);border-radius:8px">{{ cronExpr }}</code>
+          <button @click="copy(cronExpr)" class="btn btn-primary">{{ copied?'已复制✓':'复制' }}</button>
+        </div>
+      </div>
+      <div style="border:1px solid var(--border);border-radius:12px;padding:20px;background:var(--bg2)">
+        <h3 style="font-weight:500;margin-bottom:12px">📌 {{ cronDesc }}</h3>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;font-size:12px;text-align:center">
+          <div v-for="f in ['分钟(0-59)','小时(0-23)','日(1-31)','月(1-12)','周(0-7)']" :key="f" style="padding:8px;border-radius:6px;background:var(--bg3);color:var(--text2)">{{ f }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lorem Ipsum -->
+    <div v-if="page==='lorem'">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:20px">
+        <div style="display:flex;align-items:center;gap:8px"><label style="font-size:13px">数量</label><input v-model.number="loremCount" type="number" min="1" max="100" style="width:60px;padding:6px 10px" /></div>
+        <div style="display:flex;gap:8px">
+          <button v-for="u in [{k:'paragraphs',l:'段落'},{k:'sentences',l:'句子'},{k:'words',l:'单词'}]" :key="u.k" @click="loremUnit=u.k" class="btn" :style="{background:loremUnit===u.k?'var(--primary)':'transparent',color:loremUnit===u.k?'#fff':'var(--text2)',border:loremUnit===u.k?'none':'1px solid var(--border)'}">{{ u.l }}</button>
+        </div>
+        <button @click="copy(loremResult)" class="btn btn-primary">{{ copied?'已复制✓':'复制全部' }}</button>
+      </div>
+      <div style="border:1px solid var(--border);border-radius:12px;padding:24px;background:var(--bg2);line-height:1.8">
+        <p v-for="(p,i) in loremResult.split('\n\n')" :key="i" style="margin-bottom:16px">{{ p }}</p>
+      </div>
+      <p style="font-size:12px;color:var(--text2);text-align:center;margin-top:12px">共 {{ loremResult.split(/\s+/).length }} 个单词</p>
+    </div>
+
+    <!-- IP Lookup -->
+    <div v-if="page==='ip'">
+      <div style="border:1px solid var(--border);border-radius:12px;padding:24px;background:var(--bg2);margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:16px">
+          <h3 style="font-weight:500">本机 IP 信息</h3>
+          <button @click="fetchMyIP" class="btn btn-outline" style="font-size:13px">🔄 刷新</button>
+        </div>
+        <div v-if="ipLoading" style="text-align:center;padding:32px;color:var(--text2)">加载中...</div>
+        <div v-else-if="ipError" style="text-align:center;padding:32px;color:#ef4444">{{ ipError }}</div>
+        <div v-else-if="ipInfo">
+          <div style="font-size:2rem;font-family:monospace;font-weight:700;text-align:center;margin-bottom:16px;background:linear-gradient(135deg,#0ea5e9,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent">{{ ipInfo.ip }}</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div v-for="item in [{l:'城市',v:ipInfo.city},{l:'地区',v:ipInfo.region},{l:'国家',v:ipInfo.country},{l:'运营商',v:ipInfo.org},{l:'ASN',v:ipInfo.asn},{l:'时区',v:ipInfo.timezone},{l:'经纬度',v:ipInfo.lat+','+ipInfo.lon}]" :key="item.l" style="display:flex;justify-content:space-between;padding:8px 12px;border-radius:8px;background:var(--bg3)">
+              <span style="font-size:13px;color:var(--text2)">{{ item.l }}</span>
+              <span style="font-size:13px;font-weight:500;text-align:right">{{ item.v||'-' }}</span>
+            </div>
+          </div>
+          <button @click="copy(ipInfo.ip)" class="btn btn-primary" style="width:100%;margin-top:12px">{{ copied?'已复制✓':'复制 IP 地址' }}</button>
+        </div>
+      </div>
+      <div style="border:1px solid var(--border);border-radius:12px;padding:24px;background:var(--bg2)">
+        <h3 style="font-weight:500;margin-bottom:12px">查询其他 IP</h3>
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <input v-model="customIp" @keyup.enter="lookupIP" type="text" style="flex:1" placeholder="输入 IP 地址..." />
+          <button @click="lookupIP" class="btn btn-primary">{{ ipCustomLoading?'查询中...':'查询' }}</button>
+        </div>
+        <div v-if="ipCustomResult">
+          <div v-if="ipCustomResult.error" style="color:#ef4444;font-size:13px">❌ {{ ipCustomResult.error }}</div>
+          <div v-else>
+            <div style="font-size:18px;font-family:monospace;font-weight:700;margin-bottom:8px">{{ ipCustomResult.ip }}</div>
+            <div style="font-size:13px;color:var(--text2)">{{ ipCustomResult.city }}, {{ ipCustomResult.region }}, {{ ipCustomResult.country }} · {{ ipCustomResult.org }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer style="text-align:center;padding:24px;font-size:13px;color:var(--text2)">
+    © 2026 Ren Echo · 所有工具均在浏览器本地运行，数据不会上传服务器
+  </footer>
+</div>
+
+<script>
+const { createApp, ref, computed, watch, onMounted, nextTick } = Vue
+
+createApp({
+  setup() {
+    // Theme
+    const isDark = ref(false)
+    function toggleTheme() {
+      isDark.value = !isDark.value
+      document.documentElement.setAttribute('data-theme', isDark.value ? 'dark' : 'light')
+      localStorage.setItem('theme', isDark.value ? 'dark' : 'light')
+    }
+    onMounted(() => {
+      const s = localStorage.getItem('theme')
+      if (s === 'dark' || (!s && window.matchMedia('(prefers-color-scheme:dark)').matches)) {
+        isDark.value = true
+        document.documentElement.setAttribute('data-theme', 'dark')
+      }
+    })
+
+    // Navigation
+    const page = ref('home')
+    const search = ref('')
+    const activeCat = ref('全部')
+    const categories = ['全部', '编解码', '转换器', '生成器', '文本处理', '网络工具', '安全工具']
+
+    const tools = [
+      {id:'json',name:'JSON 格式化',desc:'美化、压缩、验证 JSON',icon:'{}',cat:'文本处理',gradient:'linear-gradient(135deg,#f59e0b,#f97316)'},
+      {id:'base64',name:'Base64 编解码',desc:'文本 Base64 编码/解码',icon:'B64',cat:'编解码',gradient:'linear-gradient(135deg,#10b981,#14b8a6)'},
+      {id:'color',name:'颜色转换器',desc:'HEX/RGB/HSL 互转',icon:'🎨',cat:'转换器',gradient:'linear-gradient(135deg,#ec4899,#f43f5e)'},
+      {id:'timestamp',name:'时间戳转换',desc:'Unix 时间戳与日期互转',icon:'⏱',cat:'转换器',gradient:'linear-gradient(135deg,#0ea5e9,#3b82f6)'},
+      {id:'uuid',name:'UUID 生成器',desc:'批量生成 UUID v4',icon:'🔑',cat:'生成器',gradient:'linear-gradient(135deg,#8b5cf6,#a855f7)'},
+      {id:'hash',name:'Hash 计算器',desc:'SHA-1/SHA-256/SHA-512 哈希',icon:'#',cat:'安全工具',gradient:'linear-gradient(135deg,#ef4444,#f43f5e)'},
+      {id:'regex',name:'正则表达式测试',desc:'实时匹配、高亮、捕获组',icon:'.*',cat:'文本处理',gradient:'linear-gradient(135deg,#6366f1,#3b82f6)'},
+      {id:'url-codec',name:'URL 编解码',desc:'URL 编码/解码转换',icon:'%',cat:'编解码',gradient:'linear-gradient(135deg,#06b6d4,#0ea5e9)'},
+      {id:'markdown',name:'Markdown 预览',desc:'实时 Markdown 渲染',icon:'M↓',cat:'文本处理',gradient:'linear-gradient(135deg,#475569,#374151)'},
+      {id:'text-diff',name:'文本对比',desc:'逐行文本差异对比',icon:'≠',cat:'文本处理',gradient:'linear-gradient(135deg,#d97706,#eab308)'},
+      {id:'number-base',name:'进制转换',desc:'二/八/十/十六进制互转',icon:'0x',cat:'转换器',gradient:'linear-gradient(135deg,#14b8a6,#06b6d4)'},
+      {id:'password',name:'密码生成器',desc:'安全随机密码生成',icon:'🔒',cat:'安全工具',gradient:'linear-gradient(135deg,#16a34a,#10b981)'},
+      {id:'cron',name:'Cron 解析器',desc:'Cron 表达式可视化',icon:'⏰',cat:'生成器',gradient:'linear-gradient(135deg,#f97316,#f59e0b)'},
+      {id:'lorem',name:'Lorem 生成器',desc:'占位文本生成',icon:'Lp',cat:'生成器',gradient:'linear-gradient(135deg,#64748b,#475569)'},
+      {id:'ip',name:'IP 查询',desc:'本机 IP 和归属地查询',icon:'🌐',cat:'网络工具',gradient:'linear-gradient(135deg,#2563eb,#6366f1)'},
+    ]
+
+    const filteredTools = computed(() => tools.filter(t => {
+      const cat = activeCat.value === '全部' || t.cat === activeCat.value
+      const q = !search.value || t.name.includes(search.value) || t.desc.includes(search.value) || t.cat.includes(search.value)
+      return cat && q
+    }))
+
+    const currentTool = computed(() => tools.find(t => t.id === page.value) || tools[0])
+    function openTool(id) { page.value = id; window.scrollTo(0, 0) }
+
+    // Copy
+    const copied = ref(false)
+    async function copy(text) {
+      try { await navigator.clipboard.writeText(text) } catch { const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta) }
+      copied.value = true; setTimeout(() => copied.value = false, 2000)
+    }
+
+    // JSON Formatter
+    const jsonInput = ref('{\n  "name": "Ren Echo",\n  "age": 22,\n  "skills": ["AI", "Python", "Vue"],\n  "blog": {\n    "name": "Ren Echo",\n    "url": "https://renecho-blog.pages.dev"\n  }\n}')
+    const jsonIndent = ref('2')
+    const jsonError = ref('')
+    const jsonFormatted = computed(() => { jsonError.value=''; try { return JSON.stringify(JSON.parse(jsonInput.value),null,+jsonIndent.value) } catch(e) { jsonError.value=e.message; return '' } })
+    const jsonCompressed = computed(() => { try { return JSON.stringify(JSON.parse(jsonInput.value)) } catch { return '' } })
+    const jsonKeys = computed(() => { try { return Object.keys(JSON.parse(jsonInput.value)).length } catch { return 0 } })
+
+    // Base64
+    const b64Mode = ref('encode')
+    const b64Input = ref('Hello, Ren Echo! 你好世界 🌍')
+    const b64Output = computed(() => { try { return b64Mode.value==='encode'?btoa(unescape(encodeURIComponent(b64Input.value))):decodeURIComponent(escape(atob(b64Input.value))) } catch(e) { return '⚠️ 无效的 Base64' } })
+    function b64Swap() { b64Input.value=b64Output.value!=='⚠️ 无效的 Base64'?b64Output.value:''; b64Mode.value=b64Mode.value==='encode'?'decode':'encode' }
+
+    // Color
+    const colorHex = ref('#0ea5e9')
+    const colorR = ref(14), colorG = ref(165), colorB = ref(233)
+    const colorH = ref(200), colorS = ref(88), colorL = ref(48)
+    function hexToRgb(h) { const m=h.replace('#','').match(/^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i); return m?{r:parseInt(m[1],16),g:parseInt(m[2],16),b:parseInt(m[3],16)}:null }
+    function rgbToHex(r,g,b) { return '#'+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('') }
+    function rgbToHsl(r,g,b) { r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b);let h=0,s=0,l=(mx+mn)/2;if(mx!==mn){const d=mx-mn;s=l>.5?d/(2-mx-mn):d/(mx+mn);if(mx===r)h=((g-b)/d+(g<b?6:0))/6;else if(mx===g)h=((b-r)/d+2)/6;else h=((r-g)/d+4)/6}return{h:Math.round(h*360),s:Math.round(s*100),l:Math.round(l*100)} }
+    function hslToRgb(h,s,l) { s/=100;l/=100;const c=(1-Math.abs(2*l-1))*s,x=c*(1-Math.abs((h/60)%2-1)),m=l-c/2;let r=0,g=0,b=0;if(h<60){r=c;g=x}else if(h<120){r=x;g=c}else if(h<180){g=c;b=x}else if(h<240){g=x;b=c}else if(h<300){r=x;b=c}else{r=c;b=x}return{r:Math.round((r+m)*255),g:Math.round((g+m)*255),b:Math.round((b+m)*255)} }
+    watch(colorHex, v => { const c=hexToRgb(v);if(c){colorR.value=c.r;colorG.value=c.g;colorB.value=c.b;const h=rgbToHsl(c.r,c.g,c.b);colorH.value=h.h;colorS.value=h.s;colorL.value=h.l} })
+    watch([colorR,colorG,colorB], ([r,g,b]) => { colorHex.value=rgbToHex(r,g,b);const h=rgbToHsl(r,g,b);colorH.value=h.h;colorS.value=h.s;colorL.value=h.l })
+    watch([colorH,colorS,colorL], ([h,s,l]) => { const c=hslToRgb(h,s,l);colorR.value=c.r;colorG.value=c.g;colorB.value=c.b;colorHex.value=rgbToHex(c.r,c.g,c.b) })
+
+    // Timestamp
+    const tsVal = ref(Math.floor(Date.now()/1000))
+    const tsDate = ref('')
+    function tsToDate() { const d=new Date(tsVal.value*1000);tsDate.value=d.toISOString().slice(0,19) }
+    function dateToTs() { const d=new Date(tsDate.value);if(!isNaN(d.getTime()))tsVal.value=Math.floor(d.getTime()/1000) }
+    onMounted(tsToDate)
+    const tsFormats = computed(() => { const d=new Date(tsVal.value*1000);return[{l:'Unix 秒',v:tsVal.value.toString()},{l:'Unix 毫秒',v:(tsVal.value*1000).toString()},{l:'ISO 8601',v:d.toISOString()},{l:'UTC',v:d.toUTCString()},{l:'本地时间',v:d.toLocaleString('zh-CN')},{l:'日期',v:d.toLocaleDateString('zh-CN')},{l:'时间',v:d.toLocaleTimeString('zh-CN')}] })
+
+    // UUID
+    const uuidCount = ref(5), uuidUpper = ref(false), uuidBraces = ref(false), uuidList = ref([])
+    function genUUID() { uuidList.value=Array.from({length:uuidCount.value},()=>{let u='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:(r&0x3|0x8)).toString(16)});if(uuidUpper.value)u=u.toUpperCase();if(uuidBraces.value)u='{'+u+'}';return u}) }
+    onMounted(genUUID)
+
+    // Hash
+    const hashInput = ref('Hello, Ren Echo!')
+    const hashResults = ref([])
+    async function calcHash() {
+      const enc = new TextEncoder()
+      const results = []
+      for (const [name, algo] of [['SHA-1','SHA-1'],['SHA-256','SHA-256'],['SHA-384','SHA-384'],['SHA-512','SHA-512']]) {
+        try {
+          const buf = await crypto.subtle.digest(algo, enc.encode(hashInput.value))
+          results.push({name, value: Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('')})
+        } catch { results.push({name, value:'⚠️ 不支持'}) }
+      }
+      hashResults.value = results
+    }
+    onMounted(calcHash)
+
+    // Regex
+    const regexPattern = ref('(\\w+)@(\\w+\\.\\w+)')
+    const regexFlags = ref('gm')
+    const regexText = ref('联系我：hello@example.com 或 test.user@gmail.com\n无效：not-an-email')
+    const regexError = ref('')
+    const regexMatches = computed(() => { regexError.value='';if(!regexPattern.value)return[];try{const r=new RegExp(regexPattern.value,regexFlags.value);const res=[];let m;if(regexFlags.value.includes('g')){while((m=r.exec(regexText.value))!==null){res.push({match:m[0],index:m.index});if(!m[0])break}}else{m=r.exec(regexText.value);if(m)res.push({match:m[0],index:m.index})}return res}catch(e){regexError.value=e.message;return[]} })
+    const regexHighlighted = computed(() => { if(!regexPattern.value||regexError.value)return regexText.value;try{return regexText.value.replace(new RegExp(regexPattern.value,regexFlags.value.includes('g')?regexFlags.value:regexFlags.value+'g'),'<mark>$&</mark>')}catch{return regexText.value} })
+    function toggleRegexFlag(f) { regexFlags.value=regexFlags.value.includes(f)?regexFlags.value.replace(f,''):regexFlags.value+f }
+
+    // URL Codec
+    const urlMode = ref('encode'), urlInput = ref('https://renecho-blog.pages.dev/search?q=你好世界&lang=zh')
+    const urlOutput = computed(() => { try { return urlMode.value==='encode'?encodeURIComponent(urlInput.value):decodeURIComponent(urlInput.value) } catch(e) { return '⚠️ '+e.message } })
+    function urlSwap() { urlInput.value=urlOutput.value;urlMode.value=urlMode.value==='encode'?'decode':'encode' }
+
+    // Markdown
+    const mdInput = ref('# Hello World\n\n这是一段 **Markdown** 示例。\n\n## 功能\n\n- ✅ 实时预览\n- ✅ 代码高亮\n- ✅ 表格支持\n\n```javascript\nconst msg = "Hello, Ren Echo!"\nconsole.log(msg)\n```\n\n| 工具 | 状态 |\n|------|------|\n| JSON | ✅ |\n| Base64 | ✅ |\n\n> 💡 所有工具均在浏览器本地运行\n\n---\n\n[访问博客](https://renecho-blog.pages.dev)')
+    const mdHtml = computed(() => { try { return marked.parse(mdInput.value) } catch { return mdInput.value } })
+
+    // Text Diff
+    const diffA = ref('Hello World\nThis is line 2\nUnchanged line\nDelete me\nKeep this'), diffB = ref('Hello Ren Echo\nThis is line 2\nUnchanged line\nAdded line\nKeep this')
+    const diffResult = computed(() => { const a=diffA.value.split('\n'),b=diffB.value.split('\n'),res=[];const mx=Math.max(a.length,b.length);for(let i=0;i<mx;i++){if(a[i]===b[i])res.push({type:'same',line:i+1,text:a[i]});else{if(a[i]!==undefined)res.push({type:'removed',line:i+1,text:a[i]});if(b[i]!==undefined)res.push({type:'added',line:i+1,text:b[i]})}}return res })
+    const diffStats = computed(() => ({added:diffResult.value.filter(d=>d.type==='added').length,removed:diffResult.value.filter(d=>d.type==='removed').length}))
+
+    // Number Base
+    const numDec = ref(255)
+    const numHex = computed(() => numDec.value.toString(16).toUpperCase())
+    const numBin = computed(() => numDec.value.toString(2))
+    const numOct = computed(() => numDec.value.toString(8))
+
+    // Password
+    const pwLen = ref(16), pwUpper = ref(true), pwLower = ref(true), pwDigits = ref(true), pwSymbols = ref(true), pwList = ref([])
+    function genPw() {
+      let chars = ''
+      if(pwUpper.value)chars+='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+      if(pwLower.value)chars+='abcdefghijklmnopqrstuvwxyz'
+      if(pwDigits.value)chars+='0123456789'
+      if(pwSymbols.value)chars+='!@#$%^&*()_+-=[]{}|;:,.<>?'
+      if(!chars)chars='abcdefghijklmnopqrstuvwxyz'
+      const arr = new Uint32Array(pwLen.value*5)
+      crypto.getRandomValues(arr)
+      pwList.value = Array.from({length:5},(_, i) => Array.from({length:pwLen.value},(_, j) => chars[arr[i*pwLen.value+j] % chars.length]).join(''))
+    }
+    function pwStrength(pw) {
+      let s=0;if(pw.length>=8)s++;if(pw.length>=12)s++;if(pw.length>=16)s++;if(/[a-z]/.test(pw)&&/[A-Z]/.test(pw))s++;if(/\d/.test(pw))s++;if(/[^a-zA-Z0-9]/.test(pw))s++
+      if(s<=2)return{label:'弱',color:'#ef4444',width:'33%'};if(s<=4)return{label:'中',color:'#f59e0b',width:'66%'};return{label:'强',color:'#22c55e',width:'100%'}
+    }
+    onMounted(genPw)
+
+    // Cron
+    const cronFields = ref({min:'*',hour:'*',day:'*',month:'*',weekday:'*'})
+    const cronPresets = [{label:'每分钟',cron:'* * * * *'},{label:'每小时',cron:'0 * * * *'},{label:'每天零点',cron:'0 0 * * *'},{label:'每天早8点',cron:'0 8 * * *'},{label:'每周一早9点',cron:'0 9 * * 1'},{label:'每5分钟',cron:'*/5 * * * *'},{label:'工作日早9晚6',cron:'0 9,18 * * 1-5'}]
+    const cronExpr = computed(() => `${cronFields.value.min} ${cronFields.value.hour} ${cronFields.value.day} ${cronFields.value.month} ${cronFields.value.weekday}`)
+    function applyCron(c) { const p=c.split(' ');cronFields.value={min:p[0],hour:p[1],day:p[2],month:p[3],weekday:p[4]} }
+    const cronDesc = computed(() => {
+      const f=cronFields.value;const parts=[]
+      if(f.min==='*')parts.push('每分钟');else if(f.min.startsWith('*/'))parts.push('每 '+f.min.slice(2)+' 分钟');else parts.push('第 '+f.min+' 分钟')
+      if(f.hour==='*')parts.push('每小时');else if(f.hour.startsWith('*/'))parts.push('每 '+f.hour.slice(2)+' 小时');else if(f.hour.includes(','))parts.push(f.hour.replace(/,/g,'点和')+'点');else parts.push(f.hour+'点')
+      if(f.day!=='*')parts.push('每月第 '+f.day+' 天')
+      if(f.month!=='*')parts.push(f.month+'月')
+      if(f.weekday!=='*'){const d={'0':'日','1':'一','2':'二','3':'三','4':'四','5':'五','6':'六','7':'日'};if(f.weekday.includes('-')){const[a,b]=f.weekday.split('-');parts.push('周'+d[a]+'到周'+d[b])}else parts.push('周'+(d[f.weekday]||f.weekday))}
+      return parts.join('，')
+    })
+
+    // Lorem Ipsum
+    const loremCount = ref(3), loremUnit = ref('paragraphs')
+    const loremWords = 'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum'.split(' ')
+    function randSentence() { const w=Array.from({length:8+Math.floor(Math.random()*12)},()=>loremWords[Math.floor(Math.random()*loremWords.length)]);w[0]=w[0][0].toUpperCase()+w[0].slice(1);return w.join(' ')+'.' }
+    function randPara() { return Array.from({length:4+Math.floor(Math.random()*4)},()=>randSentence()).join(' ') }
+    const loremResult = computed(() => { if(loremUnit.value==='paragraphs')return Array.from({length:loremCount.value},()=>randPara()).join('\n\n');if(loremUnit.value==='sentences')return Array.from({length:loremCount.value},()=>randSentence()).join(' ');return Array.from({length:loremCount.value},()=>loremWords[Math.floor(Math.random()*loremWords.length)]).join(' ') })
+
+    // IP Lookup
+    const ipLoading = ref(true), ipError = ref(''), ipInfo = ref(null), customIp = ref(''), ipCustomResult = ref(null), ipCustomLoading = ref(false)
+    async function fetchMyIP() {
+      ipLoading.value=true;ipError.value=''
+      try { const r=await fetch('https://ipapi.co/json/');const d=await r.json()
+        ipInfo.value={ip:d.ip,city:d.city,region:d.region,country:d.country_name,org:d.org,asn:d.asn,timezone:d.timezone,lat:d.latitude,lon:d.longitude}
+      } catch(e) { ipError.value='获取失败: '+e.message } finally { ipLoading.value=false }
+    }
+    async function lookupIP() {
+      if(!customIp.value.trim())return;ipCustomLoading.value=true
+      try { const r=await fetch('https://ipapi.co/'+customIp.value.trim()+'/json/');const d=await r.json()
+        ipCustomResult.value=d.error?{error:d.reason||'查询失败'}:{ip:d.ip,city:d.city,region:d.region,country:d.country_name,org:d.org}
+      } catch(e) { ipCustomResult.value={error:e.message} } finally { ipCustomLoading.value=false }
+    }
+    onMounted(fetchMyIP)
+
+    return {
+      isDark, toggleTheme, page, search, activeCat, categories, tools, filteredTools, currentTool, openTool, copy, copied,
+      jsonInput, jsonIndent, jsonError, jsonFormatted, jsonCompressed, jsonKeys,
+      b64Mode, b64Input, b64Output, b64Swap,
+      colorHex, colorR, colorG, colorB, colorH, colorS, colorL,
+      tsVal, tsDate, tsToDate, dateToTs, tsFormats,
+      uuidCount, uuidUpper, uuidBraces, uuidList, genUUID,
+      hashInput, hashResults, calcHash,
+      regexPattern, regexFlags, regexText, regexError, regexMatches, regexHighlighted, toggleRegexFlag,
+      urlMode, urlInput, urlOutput, urlSwap,
+      mdInput, mdHtml,
+      diffA, diffB, diffResult, diffStats,
+      numDec, numHex, numBin, numOct,
+      pwLen, pwUpper, pwLower, pwDigits, pwSymbols, pwList, genPw, pwStrength,
+      cronFields, cronPresets, cronExpr, applyCron, cronDesc,
+      loremCount, loremUnit, loremResult,
+      ipLoading, ipError, ipInfo, customIp, ipCustomResult, ipCustomLoading, fetchMyIP, lookupIP,
+    }
+  }
+}).mount('#app')
+</script>
+<style>
+.hide-mobile{display:inline}
+@media(max-width:640px){.hide-mobile{display:none}}
+</style>
+</body>
+</html>
