@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://unpkg.com/qrcode-generator@1.4.4/qrcode.js"></script>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     :root{
@@ -475,6 +476,238 @@
       </div>
     </div>
 
+    <!-- QR Forge -->
+    <div v-if="page==='qr'">
+      <div style="border:1px solid var(--border);border-radius:12px;padding:24px;background:var(--bg2);margin-bottom:20px">
+        <h3 style="font-weight:500;margin-bottom:16px">{{ t('qr_input_label') }}</h3>
+        <input v-model="qrText" type="text" :placeholder="t('qr_input_ph')" style="width:100%;margin-bottom:16px" />
+        <div class="grid-3" style="margin-bottom:16px">
+          <div><label style="font-size:13px;font-weight:500;display:block;margin-bottom:6px">{{ t('qr_fg') }}</label><input v-model="qrFg" type="color" style="width:100%;height:38px;padding:4px" /></div>
+          <div><label style="font-size:13px;font-weight:500;display:block;margin-bottom:6px">{{ t('qr_bg') }}</label><input v-model="qrBg" type="color" style="width:100%;height:38px;padding:4px" /></div>
+          <div><label style="font-size:13px;font-weight:500;display:block;margin-bottom:6px">{{ t('qr_ec') }}</label><select v-model="qrEc" style="width:100%"><option value="L">L (7%)</option><option value="M">M (15%)</option><option value="Q">Q (25%)</option><option value="H">H (30%)</option></select></div>
+        </div>
+        <div style="margin-bottom:16px">
+          <label style="font-size:13px;font-weight:500;display:block;margin-bottom:6px">{{ t('qr_size') }}: {{ qrSize }}</label>
+          <input v-model.number="qrSize" type="range" min="2" max="12" class="slider" style="width:100%" />
+        </div>
+        <div style="display:flex;gap:8px">
+          <button @click="qrRender" class="btn btn-primary">{{ t('qr_gen') }}</button>
+          <button @click="qrExportPng" class="btn btn-outline">{{ t('qr_png') }}</button>
+          <button @click="qrExportSvg" class="btn btn-outline">{{ t('qr_svg') }}</button>
+        </div>
+      </div>
+      <div style="text-align:center;border:1px solid var(--border);border-radius:12px;padding:24px;background:var(--bg2)">
+        <canvas ref="qrCanvas" :width="qrCanvasSize" :height="qrCanvasSize" style="max-width:100%;image-rendering:pixelated"></canvas>
+        <p v-if="!qrRendered" style="color:var(--text2);font-size:13px;margin-top:12px">{{ t('qr_placeholder') }}</p>
+      </div>
+    </div>
+
+    <!-- Palette Snap -->
+    <div v-if="page==='palette'">
+      <div style="border:1px solid var(--border);border-radius:12px;padding:24px;background:var(--bg2);margin-bottom:20px">
+        <h3 style="font-weight:500;margin-bottom:16px">{{ t('pal_upload') }}</h3>
+        <input type="file" accept="image/*" @change="palLoadImage" style="margin-bottom:16px" />
+        <div style="margin-bottom:16px">
+          <label style="font-size:13px;font-weight:500;display:block;margin-bottom:6px">{{ t('pal_colors') }}: {{ palCount }}</label>
+          <input v-model.number="palCount" type="range" min="2" max="12" class="slider" style="width:100%" />
+        </div>
+        <button @click="palExtract" class="btn btn-primary" :disabled="!palImageData">{{ t('pal_extract') }}</button>
+      </div>
+      <div v-if="palImageSrc" style="border:1px solid var(--border);border-radius:12px;padding:16px;background:var(--bg2);margin-bottom:20px;text-align:center">
+        <canvas ref="palCanvas" style="max-width:100%;max-height:300px;border-radius:8px"></canvas>
+      </div>
+      <div v-if="palColors.length" style="border:1px solid var(--border);border-radius:12px;padding:24px;background:var(--bg2);margin-bottom:20px">
+        <h3 style="font-weight:500;margin-bottom:16px">{{ t('pal_result') }}</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+          <div v-for="(c,i) in palColors" :key="i" @click="copy(c)" style="cursor:pointer;text-align:center">
+            <div style="width:64px;height:64px;border-radius:10px;border:2px solid var(--border);margin-bottom:4px" :style="{background:c}"></div>
+            <span style="font-size:12px;font-family:monospace">{{ c }}</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button @click="palExportCss" class="btn btn-primary">{{ t('pal_css') }}</button>
+          <button @click="palExportTailwind" class="btn btn-outline">{{ t('pal_tw') }}</button>
+        </div>
+      </div>
+      <pre v-if="palExportText" style="margin-top:16px">{{ palExportText }}</pre>
+    </div>
+
+    <!-- Gradient Studio -->
+    <div v-if="page==='gradient-studio'">
+      <div class="grid-2">
+        <div>
+          <div style="border:1px solid var(--border);border-radius:12px;padding:24px;background:var(--bg2);margin-bottom:16px">
+            <h3 style="font-weight:500;margin-bottom:16px">{{ t('grad_settings') }}</h3>
+            <div style="margin-bottom:12px">
+              <label style="font-size:13px;font-weight:500;display:block;margin-bottom:6px">{{ t('grad_type') }}</label>
+              <select v-model="gradType" style="width:100%"><option value="linear">Linear</option><option value="radial">Radial</option><option value="conic">Conic</option></select>
+            </div>
+            <div v-if="gradType!=='radial'" style="margin-bottom:12px">
+              <label style="font-size:13px;font-weight:500;display:block;margin-bottom:6px">{{ t('grad_angle') }}: {{ gradAngle }}°</label>
+              <input v-model.number="gradAngle" type="range" min="0" max="360" class="slider" style="width:100%" />
+            </div>
+            <h4 style="font-weight:500;margin:16px 0 10px;font-size:14px">{{ t('grad_stops') }}</h4>
+            <div v-for="(s,i) in gradStops" :key="i" style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+              <input v-model="s.color" type="color" style="width:40px;height:34px;padding:2px" />
+              <input v-model.number="s.pos" type="range" min="0" max="100" class="slider" style="flex:1" />
+              <span style="font-size:12px;width:36px;text-align:right">{{ s.pos }}%</span>
+              <button @click="gradStops.splice(i,1)" class="btn" style="font-size:12px;color:#ef4444;padding:4px 8px" :disabled="gradStops.length<=2">✕</button>
+            </div>
+            <button @click="gradStops.push({color:'#ffffff',pos:100})" class="btn btn-outline" style="width:100%;margin-top:8px;font-size:13px">+ {{ t('grad_add_stop') }}</button>
+          </div>
+          <div style="border:1px solid var(--border);border-radius:12px;padding:16px;background:var(--bg2)">
+            <h4 style="font-weight:500;margin-bottom:10px;font-size:14px">{{ t('grad_presets') }}</h4>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              <div v-for="(p,i) in gradPresets" :key="i" @click="gradApplyPreset(p)" style="width:48px;height:48px;border-radius:8px;cursor:pointer;border:2px solid var(--border);transition:border-color .2s" :style="{background:p.css}" :title="p.name"></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style="height:300px;border-radius:12px;border:1px solid var(--border);margin-bottom:16px" :style="{background:gradCss}"></div>
+          <div style="border:1px solid var(--border);border-radius:12px;padding:16px;background:var(--bg2)">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <h4 style="font-weight:500;font-size:14px">CSS</h4>
+              <button @click="copy(gradCss)" class="btn btn-primary" style="font-size:12px">{{ copied?'已复制✓':'Copy' }}</button>
+            </div>
+            <pre style="font-size:12px">background: {{ gradCss }};</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shadow Forge -->
+    <div v-if="page==='shadow-forge'">
+      <div class="grid-2">
+        <div>
+          <div style="border:1px solid var(--border);border-radius:12px;padding:24px;background:var(--bg2);margin-bottom:16px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+              <h3 style="font-weight:500">{{ t('shadow_layers') }}</h3>
+              <button @click="shadowAddLayer" class="btn btn-outline" style="font-size:12px">+ {{ t('shadow_add') }}</button>
+            </div>
+            <div v-for="(l,i) in shadowLayers" :key="i" style="border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:12px;background:var(--bg3)">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+                <span style="font-size:13px;font-weight:500">{{ t('shadow_layer') }} {{ i+1 }}</span>
+                <button @click="shadowLayers.splice(i,1)" class="btn" style="font-size:12px;color:#ef4444;padding:4px 8px" :disabled="shadowLayers.length<=1">✕</button>
+              </div>
+              <div class="grid-2" style="gap:10px;margin-bottom:10px">
+                <div><label style="font-size:12px;color:var(--text2)">{{ t('shadow_x') }}: {{ l.x }}px</label><input v-model.number="l.x" type="range" min="-50" max="50" class="slider" style="width:100%" /></div>
+                <div><label style="font-size:12px;color:var(--text2)">{{ t('shadow_y') }}: {{ l.y }}px</label><input v-model.number="l.y" type="range" min="-50" max="50" class="slider" style="width:100%" /></div>
+                <div><label style="font-size:12px;color:var(--text2)">{{ t('shadow_blur') }}: {{ l.blur }}px</label><input v-model.number="l.blur" type="range" min="0" max="100" class="slider" style="width:100%" /></div>
+                <div><label style="font-size:12px;color:var(--text2)">{{ t('shadow_spread') }}: {{ l.spread }}px</label><input v-model.number="l.spread" type="range" min="-50" max="100" class="slider" style="width:100%" /></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <input v-model="l.color" type="color" style="width:40px;height:34px;padding:2px" />
+                <label style="font-size:13px;display:flex;align-items:center;gap:4px"><input v-model="l.inset" type="checkbox" class="checkbox" /> Inset</label>
+              </div>
+            </div>
+          </div>
+          <div style="border:1px solid var(--border);border-radius:12px;padding:16px;background:var(--bg2)">
+            <h4 style="font-weight:500;margin-bottom:10px;font-size:14px">{{ t('shadow_presets') }}</h4>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              <button v-for="(p,i) in shadowPresets" :key="i" @click="shadowApplyPreset(p)" class="btn btn-outline" style="font-size:12px;padding:6px 12px">{{ p.name }}</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style="display:flex;align-items:center;justify-content:center;height:300px;border:1px solid var(--border);border-radius:12px;background:var(--bg3);margin-bottom:16px;padding:32px">
+            <div style="width:200px;height:200px;background:var(--bg);border-radius:12px" :style="{boxShadow:shadowCss}"></div>
+          </div>
+          <div style="border:1px solid var(--border);border-radius:12px;padding:16px;background:var(--bg2)">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <h4 style="font-weight:500;font-size:14px">CSS</h4>
+              <button @click="copy(shadowCss)" class="btn btn-primary" style="font-size:12px">{{ copied?'已复制✓':'Copy' }}</button>
+            </div>
+            <pre style="font-size:12px">box-shadow: {{ shadowCss }};</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Focus Timer -->
+    <div v-if="page==='focus-timer'">
+      <div style="text-align:center;margin-bottom:32px">
+        <div style="display:inline-flex;gap:8px;margin-bottom:24px">
+          <button @click="focusSetMode('work')" class="btn" :style="{background:focusMode==='work'?'var(--primary)':'transparent',color:focusMode==='work'?'#fff':'var(--text2)',border:focusMode==='work'?'none':'1px solid var(--border)'}">{{ t('focus_work') }} {{ focusWorkMin }}m</button>
+          <button @click="focusSetMode('short')" class="btn" :style="{background:focusMode==='short'?'#22c55e':'transparent',color:focusMode==='short'?'#fff':'var(--text2)',border:focusMode==='short'?'none':'1px solid var(--border)'}">{{ t('focus_short') }} {{ focusShortMin }}m</button>
+          <button @click="focusSetMode('long')" class="btn" :style="{background:focusMode==='long'?'#8b5cf6':'transparent',color:focusMode==='long'?'#fff':'var(--text2)',border:focusMode==='long'?'none':'1px solid var(--border)'}">{{ t('focus_long') }} {{ focusLongMin }}m</button>
+        </div>
+        <div style="position:relative;display:inline-block">
+          <svg :width="240" :height="240" style="transform:rotate(-90deg)">
+            <circle cx="120" cy="120" r="108" fill="none" stroke="var(--bg3)" stroke-width="8" />
+            <circle cx="120" cy="120" r="108" fill="none" :stroke="focusMode==='work'?'var(--primary)':focusMode==='short'?'#22c55e':'#8b5cf6'" stroke-width="8" stroke-linecap="round" :stroke-dasharray="678.6" :stroke-dashoffset="678.6*(1-focusProgress)" style="transition:stroke-dashoffset .3s" />
+          </svg>
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)">
+            <div style="font-size:48px;font-weight:700;font-family:monospace">{{ focusDisplay }}</div>
+            <div style="font-size:13px;color:var(--text2)">{{ focusMode==='work'?t('focus_working'):focusMode==='short'?t('focus_resting'):t('focus_long_rest') }}</div>
+          </div>
+        </div>
+        <div style="margin-top:24px;display:flex;justify-content:center;gap:12px">
+          <button @click="focusToggle" class="btn btn-primary" style="min-width:100px;font-size:15px">{{ focusRunning ? t('focus_pause') : t('focus_start') }}</button>
+          <button @click="focusReset" class="btn btn-outline" style="min-width:80px;font-size:15px">{{ t('focus_reset') }}</button>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:center;gap:48px;margin-bottom:32px">
+        <div style="text-align:center"><span style="font-size:28px;font-weight:700;color:var(--text)">{{ focusSessions }}</span><br><span style="font-size:13px;color:var(--text2)">{{ t('focus_sessions') }}</span></div>
+        <div style="text-align:center"><span style="font-size:28px;font-weight:700;color:var(--text)">{{ focusTotalMin }}</span><br><span style="font-size:13px;color:var(--text2)">{{ t('focus_total') }}</span></div>
+      </div>
+      <div style="border:1px solid var(--border);border-radius:12px;padding:20px;background:var(--bg2)">
+        <h3 style="font-weight:500;margin-bottom:12px">{{ t('focus_settings') }}</h3>
+        <div class="grid-3">
+          <div><label style="font-size:13px;color:var(--text2);display:block;margin-bottom:4px">{{ t('focus_work') }} (min)</label><input v-model.number="focusWorkMin" type="number" min="1" max="120" style="width:100%" /></div>
+          <div><label style="font-size:13px;color:var(--text2);display:block;margin-bottom:4px">{{ t('focus_short') }} (min)</label><input v-model.number="focusShortMin" type="number" min="1" max="30" style="width:100%" /></div>
+          <div><label style="font-size:13px;color:var(--text2);display:block;margin-bottom:4px">{{ t('focus_long') }} (min)</label><input v-model.number="focusLongMin" type="number" min="1" max="60" style="width:100%" /></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Pricing Radar -->
+    <div v-if="page==='ai-pricing'">
+      <div style="border:1px solid var(--border);border-radius:12px;padding:24px;background:var(--bg2);margin-bottom:20px">
+        <h3 style="font-weight:500;margin-bottom:16px">{{ t('pricing_calc') }}</h3>
+        <div class="grid-3" style="margin-bottom:12px">
+          <div><label style="font-size:13px;color:var(--text2);display:block;margin-bottom:4px">{{ t('pricing_input_tpd') }}</label><input v-model.number="pricingInputTpd" type="number" min="0" style="width:100%" /></div>
+          <div><label style="font-size:13px;color:var(--text2);display:block;margin-bottom:4px">{{ t('pricing_output_tpd') }}</label><input v-model.number="pricingOutputTpd" type="number" min="0" style="width:100%" /></div>
+          <div style="display:flex;align-items:end"><span style="font-size:13px;color:var(--text2)">{{ t('pricing_per_m') }}</span></div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+          <button @click="pricingSort='input'" class="btn" :class="pricingSort==='input'?'btn-primary':'btn-outline'" style="font-size:12px">{{ t('pricing_sort_input') }}</button>
+          <button @click="pricingSort='output'" class="btn" :class="pricingSort==='output'?'btn-primary':'btn-outline'" style="font-size:12px">{{ t('pricing_sort_output') }}</button>
+          <button @click="pricingSort='total'" class="btn" :class="pricingSort==='total'?'btn-primary':'btn-outline'" style="font-size:12px">{{ t('pricing_sort_total') }}</button>
+          <select v-model="pricingFilter" style="font-size:12px;padding:4px 8px;border-radius:6px"><option value="all">{{ t('pricing_all') }}</option><option v-for="p in pricingProviders" :key="p" :value="p">{{ p }}</option></select>
+        </div>
+      </div>
+      <div style="border:1px solid var(--border);border-radius:12px;padding:16px;background:var(--bg2);overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+          <thead><tr style="border-bottom:2px solid var(--border)">
+            <th style="text-align:left;padding:10px 8px;font-weight:600">{{ t('pricing_model') }}</th>
+            <th style="text-align:left;padding:10px 8px;font-weight:600">{{ t('pricing_provider') }}</th>
+            <th style="text-align:right;padding:10px 8px;font-weight:600">{{ t('pricing_input_price') }}</th>
+            <th style="text-align:right;padding:10px 8px;font-weight:600">{{ t('pricing_output_price') }}</th>
+            <th style="text-align:right;padding:10px 8px;font-weight:600">{{ t('pricing_monthly') }}</th>
+          </tr></thead>
+          <tbody>
+            <tr v-for="(m,i) in pricingFiltered" :key="m.name" :style="{background:i%2===0?'transparent':'var(--bg3)'}">
+              <td style="padding:10px 8px;font-weight:500">{{ m.name }}</td>
+              <td style="padding:10px 8px"><span class="badge">{{ m.provider }}</span></td>
+              <td style="padding:10px 8px;text-align:right;font-family:monospace">${{ m.input }}</td>
+              <td style="padding:10px 8px;text-align:right;font-family:monospace">${{ m.output }}</td>
+              <td style="padding:10px 8px;text-align:right;font-family:monospace;font-weight:600" :style="{color:pricingMonthlyCost(m)===pricingCheapest?'#22c55e':pricingMonthlyCost(m)===pricingMostExpensive?'#ef4444':'var(--text)'}">${{ pricingMonthlyCost(m).toFixed(2) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div v-if="pricingFiltered.length" style="margin-top:20px;border:1px solid var(--border);border-radius:12px;padding:20px;background:var(--bg2)">
+        <h3 style="font-weight:500;margin-bottom:16px">{{ t('pricing_chart') }}</h3>
+        <div v-for="m in pricingFiltered" :key="m.name+'bar'" style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+          <span style="font-size:12px;width:120px;text-align:right;flex-shrink:0;color:var(--text2)">{{ m.name }}</span>
+          <div style="flex:1;height:20px;background:var(--bg3);border-radius:4px;overflow:hidden">
+            <div style="height:100%;border-radius:4px;transition:width .3s" :style="{width:pricingBarWidth(m)+'%',background:m.provider==='OpenAI'?'#10b981':m.provider==='Anthropic'?'#d97706':m.provider==='Google'?'#3b82f6':m.provider==='DeepSeek'?'#8b5cf6':'#64748b'}"></div>
+          </div>
+          <span style="font-size:12px;width:70px;font-family:monospace">${{ pricingMonthlyCost(m).toFixed(2) }}</span>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- Footer -->
@@ -520,6 +753,12 @@ createApp({
         cron_name: 'Cron 解析器', cron_desc: '表达式可视化 + 预设',
         lorem_name: 'Lorem 生成器', lorem_desc: '占位文本生成',
         ip_name: 'IP 查询', ip_desc: '本机 IP 和归属地查询',
+        qr_name: 'QR Forge', qr_desc: '二维码生成器，自定义颜色/大小/纠错，导出 PNG/SVG',
+        palette_name: 'Palette Snap', palette_desc: '从图片提取色彩方案，导出 CSS 变量/Tailwind',
+        gradient_name: 'Gradient Studio', gradient_desc: 'CSS 渐变生成器：线性/径向/锥形',
+        shadow_name: 'Shadow Forge', shadow_desc: 'CSS 阴影生成器，多层叠加，预设模板',
+        focus_name: 'Focus Timer', focus_desc: '番茄钟工作法，专注/休息循环，统计面板',
+        pricing_name: 'AI Pricing Radar', pricing_desc: 'AI 模型定价对比，月费计算器，场景推荐',
         // Tool UI
         inputJson: '输入 JSON', result: '结果', clear: '清空', compress: '压缩复制', validJson: '有效 JSON', topKeys: '个顶层键', bytes: '字节',
         encode: '编码', decode: '解码', original: '原始文本', b64str: 'Base64 字符串', b64result: '编码结果', b64result2: '解码结果', invalidB64: '无效的 Base64',
@@ -559,6 +798,12 @@ createApp({
         cron_name: 'Cron Parser', cron_desc: 'Visual cron expression parser',
         lorem_name: 'Lorem Generator', lorem_desc: 'Placeholder text generation',
         ip_name: 'IP Lookup', ip_desc: 'Query your IP address & geolocation',
+        qr_name: 'QR Forge', qr_desc: 'QR code generator with custom colors & export',
+        palette_name: 'Palette Snap', palette_desc: 'Extract color palette from images, export CSS/Tailwind',
+        gradient_name: 'Gradient Studio', gradient_desc: 'CSS gradient generator: linear/radial/conic',
+        shadow_name: 'Shadow Forge', shadow_desc: 'CSS shadow generator with multi-layer & presets',
+        focus_name: 'Focus Timer', focus_desc: 'Pomodoro timer with work/break cycles & stats',
+        pricing_name: 'AI Pricing Radar', pricing_desc: 'AI model pricing comparison & cost calculator',
         inputJson: 'Input JSON', result: 'Result', clear: 'Clear', compress: 'Copy Minified', validJson: 'Valid JSON', topKeys: 'top-level keys', bytes: 'bytes',
         encode: 'Encode', decode: 'Decode', original: 'Original Text', b64str: 'Base64 String', b64result: 'Encoded', b64result2: 'Decoded', invalidB64: 'Invalid Base64',
         hex: 'HEX', rgb: 'RGB', hsl: 'HSL', copyHex: 'Copy HEX', copyRgb: 'Copy RGB', copyHsl: 'Copy HSL', copyRgba: 'Copy RGBA',
@@ -617,6 +862,12 @@ createApp({
       {id:'cron',name:t('cron_name'),desc:t('cron_desc'),icon:'⏰',cat:t('generator'),gradient:'linear-gradient(135deg,#f97316,#f59e0b)'},
       {id:'lorem',name:t('lorem_name'),desc:t('lorem_desc'),icon:'Lp',cat:t('generator'),gradient:'linear-gradient(135deg,#64748b,#475569)'},
       {id:'ip',name:t('ip_name'),desc:t('ip_desc'),icon:'🌐',cat:t('network'),gradient:'linear-gradient(135deg,#2563eb,#6366f1)'},
+      {id:'qr',name:t('qr_name'),desc:t('qr_desc'),icon:'📱',cat:t('generator'),gradient:'linear-gradient(135deg,#0d9488,#14b8a6)'},
+      {id:'palette',name:t('palette_name'),desc:t('palette_desc'),icon:'🎨',cat:t('converter'),gradient:'linear-gradient(135deg,#e11d48,#f43f5e)'},
+      {id:'gradient-studio',name:t('gradient_name'),desc:t('gradient_desc'),icon:'🌈',cat:t('generator'),gradient:'linear-gradient(135deg,#7c3aed,#a855f7)'},
+      {id:'shadow-forge',name:t('shadow_name'),desc:t('shadow_desc'),icon:'✨',cat:t('generator'),gradient:'linear-gradient(135deg,#0369a1,#0ea5e9)'},
+      {id:'focus-timer',name:t('focus_name'),desc:t('focus_desc'),icon:'🍅',cat:t('generator'),gradient:'linear-gradient(135deg,#dc2626,#ef4444)'},
+      {id:'ai-pricing',name:t('pricing_name'),desc:t('pricing_desc'),icon:'💰',cat:t('converter'),gradient:'linear-gradient(135deg,#ca8a04,#eab308)'},
     ])
 
     const filteredTools = computed(() => tools.value.filter(tool => {
@@ -776,6 +1027,198 @@ createApp({
     }
     onMounted(fetchMyIP)
 
+    // QR Forge
+    const qrText = ref('https://renecho-blog.pages.dev')
+    const qrFg = ref('#000000'), qrBg = ref('#ffffff'), qrEc = ref('M'), qrSize = ref(5)
+    const qrCanvas = ref(null)
+    function renderQR() {
+      const c = qrCanvas.value; if (!c || !qrText.value) return
+      try {
+        const typeNumber = 0
+        const ecLevel = {L:'L',M:'M',Q:'Q',H:'H'}[qrEc.value] || 'M'
+        const qr = qrcode(typeNumber, ecLevel)
+        qr.addData(qrText.value)
+        qr.make()
+        const moduleCount = qr.getModuleCount()
+        const cellSize = qrSize.value
+        const margin = cellSize * 2
+        c.width = c.height = moduleCount * cellSize + margin * 2
+        const ctx = c.getContext('2d')
+        ctx.fillStyle = qrBg.value; ctx.fillRect(0, 0, c.width, c.height)
+        ctx.fillStyle = qrFg.value
+        for (let r = 0; r < moduleCount; r++) {
+          for (let col = 0; col < moduleCount; col++) {
+            if (qr.isDark(r, col)) {
+              ctx.fillRect(margin + col * cellSize, margin + r * cellSize, cellSize, cellSize)
+            }
+          }
+        }
+      } catch(e) { console.error('QR error:', e) }
+    }
+    function downloadQR(format) {
+      const c = qrCanvas.value; if (!c) return
+      if (format === 'png') {
+        const a = document.createElement('a'); a.download = 'qrcode.png'; a.href = c.toDataURL('image/png'); a.click()
+      } else {
+        const moduleCount = Math.round((c.width - qrSize.value * 4) / qrSize.value)
+        let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${c.width} ${c.height}"><rect width="${c.width}" height="${c.height}" fill="${qrBg.value}"/>`
+        const ctx = c.getContext('2d')
+        const imgData = ctx.getImageData(0, 0, c.width, c.height).data
+        for (let y = 0; y < c.height; y += qrSize.value) {
+          for (let x = 0; x < c.width; x += qrSize.value) {
+            const i = (y * c.width + x) * 4
+            if (imgData[i] < 128) svg += `<rect x="${x}" y="${y}" width="${qrSize.value}" height="${qrSize.value}" fill="${qrFg.value}"/>`
+          }
+        }
+        svg += '</svg>'
+        const blob = new Blob([svg], {type:'image/svg+xml'}); const a = document.createElement('a'); a.download = 'qrcode.svg'; a.href = URL.createObjectURL(blob); a.click()
+      }
+    }
+    watch([qrText, qrFg, qrBg, qrEc, qrSize], () => nextTick(renderQR), {immediate: false})
+    onMounted(() => nextTick(renderQR))
+
+    // Palette Snap
+    const paletteImg = ref(null), paletteColors = ref([]), paletteCount = ref(6)
+    const paletteCanvas = ref(null)
+    function handlePaletteUpload(e) {
+      const file = e.target.files[0]; if (!file) return
+      const img = new Image(); img.onload = () => { paletteImg.value = img; extractPalette() }
+      img.src = URL.createObjectURL(file)
+    }
+    function extractPalette() {
+      if (!paletteImg.value || !paletteCanvas.value) return
+      const c = paletteCanvas.value, ctx = c.getContext('2d')
+      const maxW = 300, ratio = Math.min(maxW / paletteImg.value.width, maxW / paletteImg.value.height)
+      c.width = paletteImg.value.width * ratio; c.height = paletteImg.value.height * ratio
+      ctx.drawImage(paletteImg.value, 0, 0, c.width, c.height)
+      const data = ctx.getImageData(0, 0, c.width, c.height).data
+      const pixels = []
+      for (let i = 0; i < data.length; i += 16) pixels.push([data[i], data[i+1], data[i+2]])
+      paletteColors.value = kMeansColors(pixels, paletteCount.value)
+    }
+    function kMeansColors(pixels, k) {
+      let centroids = Array.from({length: k}, () => pixels[Math.floor(Math.random() * pixels.length)].slice())
+      for (let iter = 0; iter < 10; iter++) {
+        const clusters = Array.from({length: k}, () => [])
+        for (const p of pixels) {
+          let minD = Infinity, idx = 0
+          for (let i = 0; i < k; i++) { const d = (p[0]-centroids[i][0])**2 + (p[1]-centroids[i][1])**2 + (p[2]-centroids[i][2])**2; if (d < minD) { minD = d; idx = i } }
+          clusters[idx].push(p)
+        }
+        for (let i = 0; i < k; i++) { if (clusters[i].length) centroids[i] = clusters[i].reduce((a, b) => [a[0]+b[0], a[1]+b[1], a[2]+b[2]], [0,0,0]).map(v => Math.round(v / clusters[i].length)) }
+      }
+      return centroids.map(c => '#' + c.map(v => v.toString(16).padStart(2, '0')).join(''))
+    }
+    function exportPaletteCSS() { return ':root {\n' + paletteColors.value.map((c, i) => `  --color-${i + 1}: ${c};`).join('\n') + '\n}' }
+    function exportPaletteTailwind() { return JSON.stringify({colors: paletteColors.value.reduce((a, c, i) => ({...a, [`color-${i+1}`]: c}), {})}, null, 2) }
+    watch(paletteCount, () => { if (paletteImg.value) extractPalette() })
+
+    // Gradient Studio
+    const gradType = ref('linear'), gradAngle = ref(90)
+    const gradStops = ref([{color: '#0ea5e9', pos: 0}, {color: '#8b5cf6', pos: 100}])
+    const gradPresets = [
+      {name:'Sunset',css:'linear-gradient(135deg,#f97316,#ec4899,#8b5cf6)'},
+      {name:'Ocean',css:'linear-gradient(135deg,#0ea5e9,#06b6d4,#10b981)'},
+      {name:'Forest',css:'linear-gradient(135deg,#10b981,#059669,#065f46)'},
+      {name:'Fire',css:'linear-gradient(135deg,#ef4444,#f97316,#eab308)'},
+      {name:'Purple Haze',css:'linear-gradient(135deg,#6366f1,#8b5cf6,#a855f7)'},
+      {name:'Midnight',css:'linear-gradient(135deg,#1e1b4b,#312e81,#4338ca)'},
+      {name:'Peach',css:'linear-gradient(135deg,#fda4af,#fb923c,#fbbf24)'},
+      {name:'Aurora',css:'linear-gradient(135deg,#06b6d4,#8b5cf6,#ec4899)'},
+    ]
+    const gradCSS = computed(() => {
+      const stops = gradStops.value.map(s => `${s.color} ${s.pos}%`).join(', ')
+      if (gradType.value === 'linear') return `linear-gradient(${gradAngle.value}deg, ${stops})`
+      if (gradType.value === 'radial') return `radial-gradient(circle, ${stops})`
+      return `conic-gradient(from ${gradAngle.value}deg, ${stops})`
+    })
+    function addGradStop() { const last = gradStops.value[gradStops.value.length - 1]; gradStops.value.push({color: '#ffffff', pos: Math.min(100, last.pos + 20)}) }
+    function removeGradStop(i) { if (gradStops.value.length > 2) gradStops.value.splice(i, 1) }
+    function applyGradPreset(css) { gradType.value = 'linear'; gradAngle.value = 135; gradStops.value = css.match(/#[a-f0-9]{6}/gi)?.map((c, i, a) => ({color: c, pos: Math.round(i / (a.length - 1) * 100)})) || gradStops.value }
+
+    // Shadow Forge
+    const shadowLayers = ref([{x: 0, y: 4, blur: 6, spread: 0, color: '#00000040', inset: false}])
+    const shadowPresets = [
+      {name:'Subtle',layers:[{x:0,y:1,blur:3,spread:0,color:'#00000020',inset:false}]},
+      {name:'Card',layers:[{x:0,y:4,blur:6,spread:-1,color:'#0000001a',inset:false},{x:0,y:2,blur:4,spread:-2,color:'#0000001a',inset:false}]},
+      {name:'Elevated',layers:[{x:0,y:10,blur:15,spread:-3,color:'#0000001a',inset:false}]},
+      {name:'Neon',layers:[{x:0,y:0,blur:20,spread:2,color:'#0ea5e980',inset:false}]},
+      {name:'Inset',layers:[{x:0,y:2,blur:4,spread:0,color:'#00000030',inset:true}]},
+      {name:'Layered',layers:[{x:0,y:1,blur:2,color:'#00000014',inset:false},{x:0,y:4,blur:8,color:'#0000001a',inset:false},{x:0,y:12,blur:24,color:'#00000020',inset:false}]},
+    ]
+    const shadowCSS = computed(() => shadowLayers.value.map(l => `${l.inset?'inset ':''}${l.x}px ${l.y}px ${l.blur}px ${l.spread}px ${l.color}`).join(', '))
+    function addShadowLayer() { shadowLayers.value.push({x:0,y:4,blur:6,spread:0,color:'#00000040',inset:false}) }
+    function applyShadowPreset(p) { shadowLayers.value = p.layers.map(l => ({...l})) }
+
+    // Focus Timer
+    const focusMode = ref('work'), focusRunning = ref(false), focusTime = ref(25 * 60), focusProgress = ref(1)
+    const focusWorkMin = ref(25), focusShortMin = ref(5), focusLongMin = ref(15)
+    const focusSessions = ref(0), focusTotalMin = ref(0), focusInterval = ref(null)
+    function focusSetMode(m) {
+      focusMode.value = m; focusRunning.value = false
+      focusTime.value = (m === 'work' ? focusWorkMin.value : m === 'short' ? focusShortMin.value : focusLongMin.value) * 60
+      focusProgress.value = 1
+      if (focusInterval.value) { clearInterval(focusInterval.value); focusInterval.value = null }
+    }
+    function focusToggle() {
+      if (focusRunning.value) {
+        focusRunning.value = false; clearInterval(focusInterval.value); focusInterval.value = null
+      } else {
+        focusRunning.value = true
+        const total = (focusMode.value === 'work' ? focusWorkMin.value : focusMode.value === 'short' ? focusShortMin.value : focusLongMin.value) * 60
+        focusInterval.value = setInterval(() => {
+          focusTime.value--; focusProgress.value = focusTime.value / total
+          if (focusTime.value <= 0) {
+            clearInterval(focusInterval.value); focusInterval.value = null; focusRunning.value = false
+            if (focusMode.value === 'work') { focusSessions.value++; focusTotalMin.value += focusWorkMin.value }
+            try { new Notification(focusMode.value === 'work' ? '专注完成！休息一下 🎉' : '休息结束！继续加油 💪') } catch {}
+            if (Notification.permission !== 'granted') Notification.requestPermission()
+            if (focusMode.value === 'work') focusSetMode(focusSessions.value % 4 === 0 ? 'long' : 'short')
+            else focusSetMode('work')
+          }
+        }, 1000)
+      }
+    }
+    function focusReset() { focusSetMode(focusMode.value) }
+    function focusFormatTime(s) { const m = Math.floor(s / 60); const sec = s % 60; return `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}` }
+
+    // AI Pricing Radar
+    const pricingSearch = ref(''), pricingSort = ref('input'), pricingCalcTokens = ref(1000000)
+    const pricingData = [
+      {name:'GPT-4o',provider:'OpenAI',input:2.5,output:10,ctx:'128K',note:'旗舰多模态'},
+      {name:'GPT-4o-mini',provider:'OpenAI',input:0.15,output:0.6,ctx:'128K',note:'性价比之王'},
+      {name:'GPT-4.1',provider:'OpenAI',input:2,output:8,ctx:'1M',note:'百万上下文'},
+      {name:'GPT-4.1 mini',provider:'OpenAI',input:0.4,output:1.6,ctx:'1M',note:'长上下文轻量'},
+      {name:'Claude Opus 4',provider:'Anthropic',input:15,output:75,ctx:'200K',note:'最强推理'},
+      {name:'Claude Sonnet 4',provider:'Anthropic',input:3,output:15,ctx:'200K',note:'旗舰平衡'},
+      {name:'Claude Haiku 3.5',provider:'Anthropic',input:0.8,output:4,ctx:'200K',note:'极速轻量'},
+      {name:'Gemini 2.5 Pro',provider:'Google',input:1.25,output:10,ctx:'1M',note:'百万上下文'},
+      {name:'Gemini 2.5 Flash',provider:'Google',input:0.15,output:0.6,ctx:'1M',note:'极致性价比'},
+      {name:'DeepSeek V3',provider:'DeepSeek',input:0.27,output:1.1,ctx:'128K',note:'国产之光'},
+      {name:'DeepSeek R1',provider:'DeepSeek',input:0.55,output:2.19,ctx:'128K',note:'推理特化'},
+      {name:'Qwen Max',provider:'Alibaba',input:1.6,output:6.4,ctx:'128K',note:'阿里旗舰'},
+      {name:'GLM-4',provider:'Zhipu',input:0.7,output:2.8,ctx:'128K',note:'智谱旗舰'},
+      {name:'MiniMax M2.7',provider:'MiniMax',input:0.5,output:2,ctx:'200K',note:'长上下文'},
+      {name:'Grok-3',provider:'xAI',input:3,output:15,ctx:'128K',note:'马斯克旗下'},
+      {name:'Llama 4 Maverick',provider:'Meta',input:0.2,output:0.6,ctx:'1M',note:'开源旗舰'},
+      {name:'Mistral Large',provider:'Mistral',input:2,output:6,ctx:'128K',note:'欧洲之光'},
+      {name:'Kimi k2',provider:'Moonshot',input:0.6,output:3,ctx:'128K',note:'月之暗面'},
+    ]
+    const pricingProviders = computed(() => [...new Set(pricingData.map(d => d.provider))].sort())
+    const pricingFilter = ref('')
+    const pricingFiltered = computed(() => {
+      let list = pricingData
+      if (pricingFilter.value) list = list.filter(d => d.provider === pricingFilter.value)
+      if (pricingSearch.value) { const q = pricingSearch.value.toLowerCase(); list = list.filter(d => d.name.toLowerCase().includes(q) || d.provider.toLowerCase().includes(q)) }
+      if (pricingSort.value === 'input') list = [...list].sort((a, b) => a.input - b.input)
+      else if (pricingSort.value === 'output') list = [...list].sort((a, b) => a.output - b.output)
+      else if (pricingSort.value === 'total') list = [...list].sort((a, b) => (a.input + a.output) - (b.input + b.output))
+      return list
+    })
+    function pricingMonthly(model) { const tokens = pricingCalcTokens.value; return ((model.input * tokens / 1000000) + (model.output * tokens / 1000000 * 0.3)).toFixed(2) }
+
+    onMounted(() => { if (Notification.permission === 'default') Notification.requestPermission() })
+
     return {
       isDark, toggleTheme, lang, toggleLang, t, page, search, activeCat, categories, tools, filteredTools, currentTool, openTool, copy, copied,
       jsonInput, jsonIndent, jsonError, jsonFormatted, jsonCompressed, jsonKeys,
@@ -793,6 +1236,12 @@ createApp({
       cronFields, cronPresets, cronExpr, applyCron, cronDesc,
       loremCount, loremUnit, loremResult,
       ipLoading, ipError, ipInfo, customIp, ipCustomResult, ipCustomLoading, fetchMyIP, lookupIP,
+      qrText, qrFg, qrBg, qrEc, qrSize, qrCanvas, renderQR, downloadQR,
+      paletteImg, paletteColors, paletteCount, paletteCanvas, handlePaletteUpload, extractPalette, exportPaletteCSS, exportPaletteTailwind,
+      gradType, gradAngle, gradStops, gradPresets, gradCSS, addGradStop, removeGradStop, applyGradPreset,
+      shadowLayers, shadowPresets, shadowCSS, addShadowLayer, applyShadowPreset,
+      focusMode, focusRunning, focusTime, focusProgress, focusWorkMin, focusShortMin, focusLongMin, focusSessions, focusTotalMin, focusSetMode, focusToggle, focusReset, focusFormatTime,
+      pricingSearch, pricingSort, pricingCalcTokens, pricingData, pricingProviders, pricingFilter, pricingFiltered, pricingMonthly,
     }
   }
 }).mount('#app')
