@@ -708,6 +708,471 @@
       </div>
     </div>
 
+    <!-- TokenScope -->
+    <div v-if="page==='tokenscope'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">🔍</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">AI Token 可视化</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">可视化分析 AI 模型 Token 使用与成本，直观了解 Token 消耗情况</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">Token 分析</span>
+        <span class="badge">成本计算</span>
+        <span class="badge">可视化图表</span>
+      </div>
+      <a href="https://watermelontip.github.io/tokenscope/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
+    <!-- JSON to TS -->
+    <div v-if="page==='json-to-ts'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">TS</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">JSON→TypeScript</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">将 JSON 数据自动转换为 TypeScript 类型定义，支持嵌套对象和数组</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">类型推断</span>
+        <span class="badge">嵌套支持</span>
+        <span class="badge">一键复制</span>
+      </div>
+      <a href="https://watermelontip.github.io/json-to-ts/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
+    <!-- MarkPDF -->
+    <div v-if="page==='markpdf'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">📄</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">Markdown→PDF</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">将 Markdown 文档导出为精美的 PDF 文件，支持自定义样式</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">PDF 导出</span>
+        <span class="badge">样式定制</span>
+        <span class="badge">实时预览</span>
+      </div>
+      <a href="https://watermelontip.github.io/markpdf/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
+    <!-- Schema Viz -->
+    <div v-if="page==='schema-viz'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">🏗</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">JSON Schema 可视化</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">可视化展示 JSON Schema 的结构和字段关系，直观理解数据模型</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">结构树</span>
+        <span class="badge">关系图</span>
+        <span class="badge">交互浏览</span>
+      </div>
+      <a href="https://watermelontip.github.io/schema-viz/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
+    <!-- Grid Forge -->
+    <div v-if="page==='grid-forge'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">📐</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">CSS Grid 生成</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">可视化 CSS Grid 布局生成器，拖拽设计网格布局，一键生成代码</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">拖拽布局</span>
+        <span class="badge">代码导出</span>
+        <span class="badge">响应式</span>
+      </div>
+      <a href="https://watermelontip.github.io/grid-forge/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
+    <!-- JSON to CSV -->
+    <div v-if="page==='json-to-csv'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">📊</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">JSON→CSV</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">将 JSON 数组数据快速转换为 CSV 表格格式，支持嵌套字段展平</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">字段展平</span>
+        <span class="badge">自定义分隔符</span>
+        <span class="badge">预览导出</span>
+      </div>
+      <a href="https://watermelontip.github.io/json-to-csv/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
+    <!-- YAML Forge -->
+    <div v-if="page==='yaml-forge'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">⚙</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">YAML↔JSON</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">YAML 与 JSON 格式互相转换，实时预览，支持语法验证</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">双向转换</span>
+        <span class="badge">语法验证</span>
+        <span class="badge">实时预览</span>
+      </div>
+      <a href="https://watermelontip.github.io/yaml-forge/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
+    <!-- Table Forge -->
+    <div v-if="page==='table-forge'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">📋</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">Markdown 表格</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">可视化创建和编辑 Markdown 表格，所见即所得</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">可视化编辑</span>
+        <span class="badge">行列增删</span>
+        <span class="badge">一键复制</span>
+      </div>
+      <a href="https://watermelontip.github.io/table-forge/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
+    <!-- JSON Diff -->
+    <div v-if="page==='json-diff'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">🔀</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">JSON 差异对比</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">对比两个 JSON 对象的结构差异，高亮显示新增、删除和修改</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">差异高亮</span>
+        <span class="badge">树形对比</span>
+        <span class="badge">路径显示</span>
+      </div>
+      <a href="https://watermelontip.github.io/json-diff/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
+    <!-- Check List -->
+    <div v-if="page==='check-list'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">✅</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">清单管理</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">创建和管理待办事项清单，支持分类和进度跟踪</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">清单管理</span>
+        <span class="badge">进度跟踪</span>
+        <span class="badge">本地存储</span>
+      </div>
+      <a href="https://watermelontip.github.io/check-list/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
+    <!-- Emoji Picker -->
+    <div v-if="page==='emoji-picker'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">😀</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">Emoji 选择器</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">搜索和复制各种 Emoji 表情符号，分类浏览，一键复制</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">分类浏览</span>
+        <span class="badge">搜索过滤</span>
+        <span class="badge">一键复制</span>
+      </div>
+      <a href="https://watermelontip.github.io/emoji-picker/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
+    <!-- Quote Gen -->
+    <div v-if="page==='quote-gen'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">💬</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">引言生成器</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">生成精美的名言引言卡片，自定义样式和背景</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">卡片生成</span>
+        <span class="badge">样式定制</span>
+        <span class="badge">图片导出</span>
+      </div>
+      <a href="https://watermelontip.github.io/quote-gen/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
+    <!-- Link Extract -->
+    <div v-if="page==='link-extract'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">🔗</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">链接提取</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">从大段文本中批量提取所有 URL 链接，支持去重和过滤</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">批量提取</span>
+        <span class="badge">自动去重</span>
+        <span class="badge">域名过滤</span>
+      </div>
+      <a href="https://watermelontip.github.io/link-extract/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
+    <!-- Word Counter -->
+    <div v-if="page==='word-counter'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">📝</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">字数统计</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">统计文本的字数、字符数、段落数和阅读时间</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">字数统计</span>
+        <span class="badge">字符计数</span>
+        <span class="badge">阅读时间</span>
+      </div>
+      <a href="https://watermelontip.github.io/word-counter/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
+    <!-- Image Gallery -->
+    <div v-if="page==='image-gallery'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">🖼</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">图片画廊</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">创建图片网格画廊布局，支持多种排列方式</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">网格布局</span>
+        <span class="badge">瀑布流</span>
+        <span class="badge">响应式</span>
+      </div>
+      <a href="https://watermelontip.github.io/image-gallery/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
+    <!-- Code Highlight -->
+    <div v-if="page==='code-highlight'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">💻</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">代码高亮</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">代码语法高亮展示，支持多种编程语言和主题</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">语法高亮</span>
+        <span class="badge">多语言</span>
+        <span class="badge">主题切换</span>
+      </div>
+      <a href="https://watermelontip.github.io/code-highlight/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
+    <!-- Task Board -->
+    <div v-if="page==='task-board'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">📌</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">看板</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">拖拽式任务看板管理工具，可视化管理项目进度</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">拖拽排序</span>
+        <span class="badge">多列管理</span>
+        <span class="badge">本地存储</span>
+      </div>
+      <a href="https://watermelontip.github.io/task-board/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
+    <!-- Markdown Cheat -->
+    <div v-if="page==='markdown-cheat'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">📖</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">Markdown 速查</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">Markdown 语法速查表，快速查阅常用语法和示例</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">语法速查</span>
+        <span class="badge">示例预览</span>
+        <span class="badge">分类浏览</span>
+      </div>
+      <a href="https://watermelontip.github.io/markdown-cheat/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
+    <!-- CSS Units -->
+    <div v-if="page==='css-units'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">📏</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">CSS 单位转换</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">px、rem、em、vw 等 CSS 单位互相转换，实时预览效果</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">多单位转换</span>
+        <span class="badge">实时预览</span>
+        <span class="badge">基准设置</span>
+      </div>
+      <a href="https://watermelontip.github.io/css-units/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
+    <!-- HTML Encode -->
+    <div v-if="page==='html-encode'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">🔤</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">HTML 编码</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">HTML 实体编码与解码，支持所有常用 HTML 实体字符</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">实体编码</span>
+        <span class="badge">实体解码</span>
+        <span class="badge">批量处理</span>
+      </div>
+      <a href="https://watermelontip.github.io/html-encode/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
+    <!-- CSV to Table -->
+    <div v-if="page==='csv-to-table'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">📑</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">CSV→表格</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">将 CSV 数据转换为可视化 HTML 表格，支持排序和筛选</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">表格渲染</span>
+        <span class="badge">列排序</span>
+        <span class="badge">数据筛选</span>
+      </div>
+      <a href="https://watermelontip.github.io/csv-to-table/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
+    <!-- Line Counter -->
+    <div v-if="page==='line-counter'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">#️⃣</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">行数统计</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">统计代码行数，分析空行、注释和代码比例</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">行数统计</span>
+        <span class="badge">代码分析</span>
+        <span class="badge">语言识别</span>
+      </div>
+      <a href="https://watermelontip.github.io/line-counter/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
+    <!-- Placeholder Image -->
+    <div v-if="page==='placeholder-img'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">🖼</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">占位图生成</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">生成自定义尺寸和颜色的占位图片，用于页面原型设计</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">自定义尺寸</span>
+        <span class="badge">颜色设置</span>
+        <span class="badge">文字标注</span>
+      </div>
+      <a href="https://watermelontip.github.io/placeholder-img/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
+    <!-- Mark Editor -->
+    <div v-if="page==='mark-editor'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">✏️</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">Markdown 编辑器</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">在线 Markdown 编辑器，支持实时预览和快捷操作</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">实时预览</span>
+        <span class="badge">快捷工具栏</span>
+        <span class="badge">导出功能</span>
+      </div>
+      <a href="https://watermelontip.github.io/mark-editor/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
+    <!-- Case Convert -->
+    <div v-if="page==='case-convert'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">Aa</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">大小写转换</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">文本大小写格式互相转换，支持驼峰、下划线等多种格式</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">驼峰转换</span>
+        <span class="badge">下划线</span>
+        <span class="badge">全大写/小写</span>
+      </div>
+      <a href="https://watermelontip.github.io/case-convert/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
+    <!-- Text Reverse -->
+    <div v-if="page==='text-reverse'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">🔄</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">文本反转</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">反转文本字符串内容，支持逐字符和逐行反转</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">字符反转</span>
+        <span class="badge">行反转</span>
+        <span class="badge">单词反转</span>
+      </div>
+      <a href="https://watermelontip.github.io/text-reverse/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
+    <!-- Text Stats -->
+    <div v-if="page==='text-stats'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">📈</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">文本统计</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">文本字频、词频等深度统计分析，生成可视化报告</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">词频统计</span>
+        <span class="badge">字频分析</span>
+        <span class="badge">可视化</span>
+      </div>
+      <a href="https://watermelontip.github.io/text-stats/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
+    <!-- Text Compare -->
+    <div v-if="page==='text-compare'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">⚖</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">文本对比</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">两段文本逐字逐行对比差异，高亮显示不同之处</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">逐字对比</span>
+        <span class="badge">差异高亮</span>
+        <span class="badge">并排显示</span>
+      </div>
+      <a href="https://watermelontip.github.io/text-compare/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
+    <!-- Table Generator -->
+    <div v-if="page==='table-generator'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">📊</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">表格生成</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">快速生成自定义 HTML 表格代码，可视化编辑行列</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">可视化编辑</span>
+        <span class="badge">HTML 导出</span>
+        <span class="badge">样式定制</span>
+      </div>
+      <a href="https://watermelontip.github.io/table-generator/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
+    <!-- Markdown Table -->
+    <div v-if="page==='markdown-table'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">⊞</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">Markdown 表格</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">在线编辑 Markdown 表格，实时预览渲染效果</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">实时编辑</span>
+        <span class="badge">预览渲染</span>
+        <span class="badge">格式导出</span>
+      </div>
+      <a href="https://watermelontip.github.io/markdown-table/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
+    <!-- Markdown Table Gen -->
+    <div v-if="page==='markdown-table-gen'" style="text-align:center;padding:60px 0">
+      <div style="font-size:64px;margin-bottom:24px">🔧</div>
+      <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">Markdown 表格生成</h2>
+      <p style="color:var(--text2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto">一键生成 Markdown 表格代码，支持自定义行列数</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <span class="badge">快速生成</span>
+        <span class="badge">自定义行列</span>
+        <span class="badge">代码复制</span>
+      </div>
+      <a href="https://watermelontip.github.io/markdown-table-gen/" target="_blank" class="btn btn-primary" style="font-size:16px;padding:12px 32px;border-radius:12px">
+        🚀 打开完整工具
+      </a>
+    </div>
+
   </div>
 
   <!-- Footer -->
@@ -736,7 +1201,7 @@ createApp({
         title: '在线工具箱', subtitle: '免费 · 无需注册 · 数据不离开浏览器',
         search: '搜索工具...', noResult: '没有找到匹配的工具', tryOther: '试试其他关键词？',
         tools: '个工具', noUpload: '数据上传', free: '免费',
-        all: '全部', encoding: '编解码', converter: '转换器', generator: '生成器', text: '文本处理', network: '网络工具', security: '安全工具',
+        all: '全部', encoding: '编解码', converter: '转换器', generator: '生成器', text: '文本处理', network: '网络工具', security: '安全工具', ai: 'AI',
         // Tool names
         json_name: 'JSON 格式化', json_desc: '美化、压缩、验证 JSON',
         b64_name: 'Base64 编解码', b64_desc: '文本 Base64 编码/解码',
@@ -759,6 +1224,37 @@ createApp({
         shadow_name: 'Shadow Forge', shadow_desc: 'CSS 阴影生成器，多层叠加，预设模板',
         focus_name: 'Focus Timer', focus_desc: '番茄钟工作法，专注/休息循环，统计面板',
         pricing_name: 'AI Pricing Radar', pricing_desc: 'AI 模型定价对比，月费计算器，场景推荐',
+        tokenscope_name: 'AI Token 可视化', tokenscope_desc: '可视化分析 AI 模型 Token 使用与成本',
+        json_to_ts_name: 'JSON→TypeScript', json_to_ts_desc: '将 JSON 数据转换为 TypeScript 类型定义',
+        markpdf_name: 'Markdown→PDF', markpdf_desc: '将 Markdown 文档导出为精美 PDF 文件',
+        schema_viz_name: 'JSON Schema 可视化', schema_viz_desc: '可视化展示 JSON Schema 结构与关系',
+        grid_forge_name: 'CSS Grid 生成', grid_forge_desc: '可视化 CSS Grid 布局生成器',
+        json_to_csv_name: 'JSON→CSV', json_to_csv_desc: '将 JSON 数据转换为 CSV 表格',
+        yaml_forge_name: 'YAML↔JSON', yaml_forge_desc: 'YAML 与 JSON 互相转换',
+        table_forge_name: 'Markdown 表格', table_forge_desc: '可视化创建和编辑 Markdown 表格',
+        json_diff_name: 'JSON 差异对比', json_diff_desc: '对比两个 JSON 对象的结构差异',
+        check_list_name: '清单管理', check_list_desc: '创建和管理待办事项清单',
+        emoji_picker_name: 'Emoji 选择器', emoji_picker_desc: '搜索和复制 Emoji 表情符号',
+        quote_gen_name: '引言生成器', quote_gen_desc: '生成精美名言引言卡片',
+        link_extract_name: '链接提取', link_extract_desc: '从文本中批量提取 URL 链接',
+        word_counter_name: '字数统计', word_counter_desc: '统计文本字数、字符数和段落数',
+        image_gallery_name: '图片画廊', image_gallery_desc: '创建图片网格画廊布局',
+        code_highlight_name: '代码高亮', code_highlight_desc: '代码语法高亮与美化展示',
+        task_board_name: '看板', task_board_desc: '拖拽式任务看板管理工具',
+        markdown_cheat_name: 'Markdown 速查', markdown_cheat_desc: 'Markdown 语法速查表',
+        css_units_name: 'CSS 单位转换', css_units_desc: 'px/rem/em/vw 等 CSS 单位互相转换',
+        html_encode_name: 'HTML 编码', html_encode_desc: 'HTML 实体编码与解码',
+        csv_to_table_name: 'CSV→表格', csv_to_table_desc: '将 CSV 数据转换为可视化表格',
+        line_counter_name: '行数统计', line_counter_desc: '统计代码行数与文件分析',
+        placeholder_img_name: '占位图生成', placeholder_img_desc: '生成自定义尺寸占位图片',
+        mark_editor_name: 'Markdown 编辑器', mark_editor_desc: '在线 Markdown 编辑与预览',
+        case_convert_name: '大小写转换', case_convert_desc: '文本大小写格式互相转换',
+        text_reverse_name: '文本反转', text_reverse_desc: '反转文本字符串内容',
+        text_stats_name: '文本统计', text_stats_desc: '文本字频、词频等深度统计分析',
+        text_compare_name: '文本对比', text_compare_desc: '两段文本逐字逐行对比差异',
+        table_generator_name: '表格生成', table_generator_desc: '快速生成自定义 HTML 表格',
+        markdown_table_name: 'Markdown 表格编辑', markdown_table_desc: '在线编辑 Markdown 表格',
+        markdown_table_gen_name: 'Markdown 表格生成', markdown_table_gen_desc: '一键生成 Markdown 表格代码',
         // Tool UI
         inputJson: '输入 JSON', result: '结果', clear: '清空', compress: '压缩复制', validJson: '有效 JSON', topKeys: '个顶层键', bytes: '字节',
         encode: '编码', decode: '解码', original: '原始文本', b64str: 'Base64 字符串', b64result: '编码结果', b64result2: '解码结果', invalidB64: '无效的 Base64',
@@ -782,7 +1278,7 @@ createApp({
         title: 'Online Toolbox', subtitle: 'Free · No Registration · Data Stays in Browser',
         search: 'Search tools...', noResult: 'No matching tools found', tryOther: 'Try other keywords?',
         tools: 'Tools', noUpload: 'No Upload', free: 'Free',
-        all: 'All', encoding: 'Encoding', converter: 'Converter', generator: 'Generator', text: 'Text', network: 'Network', security: 'Security',
+        all: 'All', encoding: 'Encoding', converter: 'Converter', generator: 'Generator', text: 'Text', network: 'Network', security: 'Security', ai: 'AI',
         json_name: 'JSON Formatter', json_desc: 'Beautify, minify & validate JSON',
         b64_name: 'Base64 Codec', b64_desc: 'Encode & decode Base64 text',
         color_name: 'Color Converter', color_desc: 'HEX / RGB / HSL conversion',
@@ -804,6 +1300,37 @@ createApp({
         shadow_name: 'Shadow Forge', shadow_desc: 'CSS shadow generator with multi-layer & presets',
         focus_name: 'Focus Timer', focus_desc: 'Pomodoro timer with work/break cycles & stats',
         pricing_name: 'AI Pricing Radar', pricing_desc: 'AI model pricing comparison & cost calculator',
+        tokenscope_name: 'AI Token Visualizer', tokenscope_desc: 'Visualize AI model token usage and cost analysis',
+        json_to_ts_name: 'JSON→TypeScript', json_to_ts_desc: 'Convert JSON data to TypeScript type definitions',
+        markpdf_name: 'Markdown→PDF', markpdf_desc: 'Export Markdown documents as beautiful PDF files',
+        schema_viz_name: 'JSON Schema Viz', schema_viz_desc: 'Visualize JSON Schema structure and relationships',
+        grid_forge_name: 'CSS Grid Forge', grid_forge_desc: 'Visual CSS Grid layout generator',
+        json_to_csv_name: 'JSON→CSV', json_to_csv_desc: 'Convert JSON data to CSV spreadsheet',
+        yaml_forge_name: 'YAML↔JSON', yaml_forge_desc: 'Convert between YAML and JSON formats',
+        table_forge_name: 'Table Forge', table_forge_desc: 'Create and edit Markdown tables visually',
+        json_diff_name: 'JSON Diff', json_diff_desc: 'Compare structural differences between two JSON objects',
+        check_list_name: 'Checklist', check_list_desc: 'Create and manage todo checklists',
+        emoji_picker_name: 'Emoji Picker', emoji_picker_desc: 'Search and copy emoji characters',
+        quote_gen_name: 'Quote Generator', quote_gen_desc: 'Generate beautiful quote cards',
+        link_extract_name: 'Link Extractor', link_extract_desc: 'Batch extract URLs from text',
+        word_counter_name: 'Word Counter', word_counter_desc: 'Count words, characters, and paragraphs',
+        image_gallery_name: 'Image Gallery', image_gallery_desc: 'Create image grid gallery layouts',
+        code_highlight_name: 'Code Highlight', code_highlight_desc: 'Syntax highlighting and code beautification',
+        task_board_name: 'Task Board', task_board_desc: 'Drag-and-drop Kanban task management',
+        markdown_cheat_name: 'Markdown Cheat', markdown_cheat_desc: 'Markdown syntax quick reference',
+        css_units_name: 'CSS Units', css_units_desc: 'Convert between px/rem/em/vw CSS units',
+        html_encode_name: 'HTML Encode', html_encode_desc: 'HTML entity encoding and decoding',
+        csv_to_table_name: 'CSV→Table', csv_to_table_desc: 'Convert CSV data to visual table',
+        line_counter_name: 'Line Counter', line_counter_desc: 'Count code lines and file analysis',
+        placeholder_img_name: 'Placeholder Image', placeholder_img_desc: 'Generate custom placeholder images',
+        mark_editor_name: 'Markdown Editor', mark_editor_desc: 'Online Markdown editing and preview',
+        case_convert_name: 'Case Convert', case_convert_desc: 'Convert text between different cases',
+        text_reverse_name: 'Text Reverse', text_reverse_desc: 'Reverse text string content',
+        text_stats_name: 'Text Stats', text_stats_desc: 'Deep text frequency and statistics analysis',
+        text_compare_name: 'Text Compare', text_compare_desc: 'Character-by-character text comparison',
+        table_generator_name: 'Table Generator', table_generator_desc: 'Quickly generate custom HTML tables',
+        markdown_table_name: 'Markdown Table', markdown_table_desc: 'Edit Markdown tables online',
+        markdown_table_gen_name: 'MD Table Generator', markdown_table_gen_desc: 'One-click Markdown table code generation',
         inputJson: 'Input JSON', result: 'Result', clear: 'Clear', compress: 'Copy Minified', validJson: 'Valid JSON', topKeys: 'top-level keys', bytes: 'bytes',
         encode: 'Encode', decode: 'Decode', original: 'Original Text', b64str: 'Base64 String', b64result: 'Encoded', b64result2: 'Decoded', invalidB64: 'Invalid Base64',
         hex: 'HEX', rgb: 'RGB', hsl: 'HSL', copyHex: 'Copy HEX', copyRgb: 'Copy RGB', copyHsl: 'Copy HSL', copyRgba: 'Copy RGBA',
@@ -843,7 +1370,7 @@ createApp({
     const search = ref('')
     const activeCat = ref(0)
     const categories = computed(() => [
-      t('all'), t('encoding'), t('converter'), t('generator'), t('text'), t('network'), t('security')
+      t('all'), t('encoding'), t('converter'), t('generator'), t('text'), t('network'), t('security'), t('ai')
     ])
 
     const tools = computed(() => [
@@ -868,6 +1395,37 @@ createApp({
       {id:'shadow-forge',name:t('shadow_name'),desc:t('shadow_desc'),icon:'✨',cat:t('generator'),gradient:'linear-gradient(135deg,#0369a1,#0ea5e9)'},
       {id:'focus-timer',name:t('focus_name'),desc:t('focus_desc'),icon:'🍅',cat:t('generator'),gradient:'linear-gradient(135deg,#dc2626,#ef4444)'},
       {id:'ai-pricing',name:t('pricing_name'),desc:t('pricing_desc'),icon:'💰',cat:t('converter'),gradient:'linear-gradient(135deg,#ca8a04,#eab308)'},
+      {id:'tokenscope',name:t('tokenscope_name'),desc:t('tokenscope_desc'),icon:'🔍',cat:t('ai'),gradient:'linear-gradient(135deg,#8b5cf6,#3b82f6)'},
+      {id:'json-to-ts',name:t('json_to_ts_name'),desc:t('json_to_ts_desc'),icon:'TS',cat:t('converter'),gradient:'linear-gradient(135deg,#14b8a6,#10b981)'},
+      {id:'markpdf',name:t('markpdf_name'),desc:t('markpdf_desc'),icon:'📄',cat:t('text'),gradient:'linear-gradient(135deg,#f97316,#ef4444)'},
+      {id:'schema-viz',name:t('schema_viz_name'),desc:t('schema_viz_desc'),icon:'🏗',cat:t('text'),gradient:'linear-gradient(135deg,#3b82f6,#6366f1)'},
+      {id:'grid-forge',name:t('grid_forge_name'),desc:t('grid_forge_desc'),icon:'📐',cat:t('generator'),gradient:'linear-gradient(135deg,#10b981,#059669)'},
+      {id:'json-to-csv',name:t('json_to_csv_name'),desc:t('json_to_csv_desc'),icon:'📊',cat:t('converter'),gradient:'linear-gradient(135deg,#06b6d4,#14b8a6)'},
+      {id:'yaml-forge',name:t('yaml_forge_name'),desc:t('yaml_forge_desc'),icon:'⚙',cat:t('converter'),gradient:'linear-gradient(135deg,#f59e0b,#f97316)'},
+      {id:'table-forge',name:t('table_forge_name'),desc:t('table_forge_desc'),icon:'📋',cat:t('text'),gradient:'linear-gradient(135deg,#64748b,#475569)'},
+      {id:'json-diff',name:t('json_diff_name'),desc:t('json_diff_desc'),icon:'🔀',cat:t('text'),gradient:'linear-gradient(135deg,#f43f5e,#ec4899)'},
+      {id:'check-list',name:t('check_list_name'),desc:t('check_list_desc'),icon:'✅',cat:t('generator'),gradient:'linear-gradient(135deg,#22c55e,#84cc16)'},
+      {id:'emoji-picker',name:t('emoji_picker_name'),desc:t('emoji_picker_desc'),icon:'😀',cat:t('generator'),gradient:'linear-gradient(135deg,#eab308,#f59e0b)'},
+      {id:'quote-gen',name:t('quote_gen_name'),desc:t('quote_gen_desc'),icon:'💬',cat:t('generator'),gradient:'linear-gradient(135deg,#8b5cf6,#7c3aed)'},
+      {id:'link-extract',name:t('link_extract_name'),desc:t('link_extract_desc'),icon:'🔗',cat:t('text'),gradient:'linear-gradient(135deg,#0ea5e9,#0284c7)'},
+      {id:'word-counter',name:t('word_counter_name'),desc:t('word_counter_desc'),icon:'📝',cat:t('text'),gradient:'linear-gradient(135deg,#6366f1,#3b82f6)'},
+      {id:'image-gallery',name:t('image_gallery_name'),desc:t('image_gallery_desc'),icon:'🖼',cat:t('generator'),gradient:'linear-gradient(135deg,#ec4899,#f43f5e)'},
+      {id:'code-highlight',name:t('code_highlight_name'),desc:t('code_highlight_desc'),icon:'💻',cat:t('text'),gradient:'linear-gradient(135deg,#10b981,#0d9488)'},
+      {id:'task-board',name:t('task_board_name'),desc:t('task_board_desc'),icon:'📌',cat:t('generator'),gradient:'linear-gradient(135deg,#2563eb,#0ea5e9)'},
+      {id:'markdown-cheat',name:t('markdown_cheat_name'),desc:t('markdown_cheat_desc'),icon:'📖',cat:t('text'),gradient:'linear-gradient(135deg,#71717a,#52525b)'},
+      {id:'css-units',name:t('css_units_name'),desc:t('css_units_desc'),icon:'📏',cat:t('converter'),gradient:'linear-gradient(135deg,#06b6d4,#3b82f6)'},
+      {id:'html-encode',name:t('html_encode_name'),desc:t('html_encode_desc'),icon:'🔤',cat:t('encoding'),gradient:'linear-gradient(135deg,#ea580c,#d97706)'},
+      {id:'csv-to-table',name:t('csv_to_table_name'),desc:t('csv_to_table_desc'),icon:'📑',cat:t('converter'),gradient:'linear-gradient(135deg,#0d9488,#06b6d4)'},
+      {id:'line-counter',name:t('line_counter_name'),desc:t('line_counter_desc'),icon:'#️⃣',cat:t('text'),gradient:'linear-gradient(135deg,#2563eb,#4f46e5)'},
+      {id:'placeholder-img',name:t('placeholder_img_name'),desc:t('placeholder_img_desc'),icon:'🖼',cat:t('generator'),gradient:'linear-gradient(135deg,#6b7280,#475569)'},
+      {id:'mark-editor',name:t('mark_editor_name'),desc:t('mark_editor_desc'),icon:'✏️',cat:t('text'),gradient:'linear-gradient(135deg,#7c3aed,#4f46e5)'},
+      {id:'case-convert',name:t('case_convert_name'),desc:t('case_convert_desc'),icon:'Aa',cat:t('text'),gradient:'linear-gradient(135deg,#059669,#22c55e)'},
+      {id:'text-reverse',name:t('text_reverse_name'),desc:t('text_reverse_desc'),icon:'🔄',cat:t('text'),gradient:'linear-gradient(135deg,#ec4899,#d946ef)'},
+      {id:'text-stats',name:t('text_stats_name'),desc:t('text_stats_desc'),icon:'📈',cat:t('text'),gradient:'linear-gradient(135deg,#2563eb,#0ea5e9)'},
+      {id:'text-compare',name:t('text_compare_name'),desc:t('text_compare_desc'),icon:'⚖',cat:t('text'),gradient:'linear-gradient(135deg,#ea580c,#ef4444)'},
+      {id:'table-generator',name:t('table_generator_name'),desc:t('table_generator_desc'),icon:'📊',cat:t('generator'),gradient:'linear-gradient(135deg,#4f46e5,#7c3aed)'},
+      {id:'markdown-table',name:t('markdown_table_name'),desc:t('markdown_table_desc'),icon:'⊞',cat:t('text'),gradient:'linear-gradient(135deg,#0d9488,#22c55e)'},
+      {id:'markdown-table-gen',name:t('markdown_table_gen_name'),desc:t('markdown_table_gen_desc'),icon:'🔧',cat:t('generator'),gradient:'linear-gradient(135deg,#8b5cf6,#ec4899)'},
     ])
 
     const filteredTools = computed(() => tools.value.filter(tool => {
